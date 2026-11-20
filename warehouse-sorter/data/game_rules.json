@@ -1,0 +1,9 @@
+{
+  "gridWidth": 6,
+  "gridHeight": 4,
+  "beltCapacity": 6,
+  "matchCount": 4,
+  "comboWindow": 3.0,
+  "comboMultiplier": 0.2,
+  "baseScoreFail": -50
+}

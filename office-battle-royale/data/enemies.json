@@ -1,0 +1,12 @@
+[
+  {"id":"temporary","name":"临时需求","hp":18,"intents":[{"type":"damage","value":5},{"type":"stress","value":6}]},
+  {"id":"weekly","name":"周会","hp":22,"intents":[{"type":"damage","value":6},{"type":"stress","value":8}]},
+  {"id":"cross","name":"跨部门扯皮","hp":28,"intents":[{"type":"damage","value":7},{"type":"stress","value":7},{"type":"damage","value":10}]},
+  {"id":"boss_pie","name":"老板画饼","hp":32,"intents":[{"type":"stress","value":10},{"type":"damage","value":6},{"type":"stress","value":12}]},
+  {"id":"outage","name":"线上故障","hp":36,"intents":[{"type":"damage","value":8},{"type":"damage","value":10},{"type":"stress","value":10}]},
+  {"id":"perf","name":"绩效面谈","hp":42,"intents":[{"type":"stress","value":12},{"type":"damage","value":10},{"type":"stress","value":8}]},
+  {"id":"competitor","name":"竞品突袭","hp":48,"intents":[{"type":"damage","value":12},{"type":"stress","value":10},{"type":"damage","value":8}]},
+  {"id":"change","name":"需求变更","hp":52,"intents":[{"type":"damage","value":10},{"type":"stress","value":14},{"type":"damage","value":12}]},
+  {"id":"team","name":"团建","hp":58,"intents":[{"type":"stress","value":15},{"type":"damage","value":12},{"type":"stress","value":15}]},
+  {"id":"layoff","name":"老板终面","hp":70,"intents":[{"type":"damage","value":14},{"type":"stress","value":18},{"type":"damage","value":20}]}
+]

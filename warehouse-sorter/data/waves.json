@@ -1,0 +1,12 @@
+[
+  {"wave":1,"spawnInterval":2.5,"weights":{"normal":80,"fragile":10,"fresh":5,"urgent":5,"big":0},"targetScore":100},
+  {"wave":2,"spawnInterval":2.4,"weights":{"normal":70,"fragile":15,"fresh":10,"urgent":5,"big":0},"targetScore":220},
+  {"wave":3,"spawnInterval":2.3,"weights":{"normal":65,"fragile":15,"fresh":10,"urgent":10,"big":0},"targetScore":360},
+  {"wave":4,"spawnInterval":2.2,"weights":{"normal":60,"fragile":15,"fresh":10,"urgent":10,"big":5},"targetScore":520},
+  {"wave":5,"spawnInterval":2.0,"weights":{"normal":55,"fragile":15,"fresh":12,"urgent":13,"big":5},"targetScore":700},
+  {"wave":6,"spawnInterval":1.9,"weights":{"normal":50,"fragile":18,"fresh":12,"urgent":15,"big":5},"targetScore":900},
+  {"wave":7,"spawnInterval":1.8,"weights":{"normal":45,"fragile":18,"fresh":15,"urgent":17,"big":5},"targetScore":1120},
+  {"wave":8,"spawnInterval":1.7,"weights":{"normal":40,"fragile":20,"fresh":15,"urgent":20,"big":5},"targetScore":1360},
+  {"wave":9,"spawnInterval":1.6,"weights":{"normal":35,"fragile":20,"fresh":17,"urgent":23,"big":5},"targetScore":1620},
+  {"wave":10,"spawnInterval":1.4,"weights":{"normal":30,"fragile":22,"fresh":18,"urgent":25,"big":5},"targetScore":1900}
+]

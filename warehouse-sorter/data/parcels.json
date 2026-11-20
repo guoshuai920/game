@@ -1,0 +1,22 @@
+[
+  {"id":"normal_1x1","name":"普通件","emoji":"📦","color":"#4A90D9","shape":[[0,0]],"score":10,"tag":"normal"},
+  {"id":"normal_1x2","name":"普通长件","emoji":"📦","color":"#4A90D9","shape":[[0,0],[0,1]],"score":15,"tag":"normal"},
+  {"id":"normal_2x2","name":"普通大件","emoji":"📦","color":"#4A90D9","shape":[[0,0],[0,1],[1,0],[1,1]],"score":25,"tag":"normal"},
+  {"id":"fragile_1x1","name":"易碎件","emoji":"🧊","color":"#E05A5A","shape":[[0,0]],"score":20,"tag":"fragile","rule":"break_if_neighbors>=2"},
+  {"id":"fragile_1x2","name":"易碎长件","emoji":"🧊","color":"#E05A5A","shape":[[0,0],[0,1]],"score":30,"tag":"fragile","rule":"break_if_neighbors>=2"},
+  {"id":"fresh_1x1","name":"生鲜件","emoji":"🍎","color":"#3DBE6B","shape":[[0,0]],"score":25,"tag":"fresh","timer":15},
+  {"id":"fresh_1x2","name":"生鲜长件","emoji":"🍎","color":"#3DBE6B","shape":[[0,0],[0,1]],"score":35,"tag":"fresh","timer":15},
+  {"id":"urgent_1x1","name":"加急件","emoji":"⚡","color":"#F2C14E","shape":[[0,0]],"score":30,"tag":"urgent","timer":10},
+  {"id":"urgent_1x2","name":"加急长件","emoji":"⚡","color":"#F2C14E","shape":[[0,0],[0,1]],"score":40,"tag":"urgent","timer":10},
+  {"id":"big_2x2","name":"大件","emoji":"📺","color":"#9B6BD9","shape":[[0,0],[0,1],[1,0],[1,1]],"score":75,"tag":"big","multiplier":3},
+  {"id":"big_L","name":"L形大件","emoji":"🪑","color":"#9B6BD9","shape":[[0,0],[0,1],[1,0]],"score":60,"tag":"big","multiplier":3},
+  {"id":"doc_1x1","name":"文件袋","emoji":"📄","color":"#B0B0B0","shape":[[0,0]],"score":5,"tag":"normal"},
+  {"id":"doc_1x2","name":"文件长袋","emoji":"📄","color":"#B0B0B0","shape":[[0,0],[0,1]],"score":8,"tag":"normal"},
+  {"id":"liquid_1x1","name":"液体件","emoji":"🧴","color":"#E08A3D","shape":[[0,0]],"score":18,"tag":"fragile","rule":"break_if_neighbors>=3"},
+  {"id":"liquid_1x2","name":"液体长件","emoji":"🧴","color":"#E08A3D","shape":[[0,0],[0,1]],"score":26,"tag":"fragile","rule":"break_if_neighbors>=3"},
+  {"id":"cold_2x2","name":"冷链大件","emoji":"❄️","color":"#5AB9D9","shape":[[0,0],[0,1],[1,0],[1,1]],"score":80,"tag":"fresh","timer":20,"multiplier":3},
+  {"id":"express_1x1","name":"特快件","emoji":"🚀","color":"#F2C14E","shape":[[0,0]],"score":35,"tag":"urgent","timer":8},
+  {"id":"express_2x2","name":"特快大件","emoji":"🚀","color":"#F2C14E","shape":[[0,0],[0,1],[1,0],[1,1]],"score":90,"tag":"urgent","timer":8,"multiplier":3},
+  {"id":"fragile_2x2","name":"易碎大件","emoji":"🥂","color":"#E05A5A","shape":[[0,0],[0,1],[1,0],[1,1]],"score":70,"tag":"fragile","rule":"break_if_neighbors>=2","multiplier":3},
+  {"id":"normal_L","name":"L形件","emoji":"📦","color":"#4A90D9","shape":[[0,0],[1,0],[1,1]],"score":20,"tag":"normal"}
+]

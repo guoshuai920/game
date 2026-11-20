@@ -1,0 +1,252 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.086, 0.106, 0.149, 1)
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 16
+offset_top = 10
+offset_right = 1264
+offset_bottom = 44
+theme_override_constants/separation = 28
+
+[node name="NodeLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "节点 1/12"
+
+[node name="HpLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "精力 80/80"
+
+[node name="StressLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "压力 0/100"
+
+[node name="EnergyLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "行动点 3"
+
+[node name="BlockLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "护盾 0"
+
+[node name="PilesLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "牌库 10 · 弃牌 0"
+
+[node name="EnemyPanel" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -260
+offset_top = 70
+offset_right = 260
+offset_bottom = 200
+grow_horizontal = 2
+theme_override_constants/separation = 8
+
+[node name="EnemyName" type="Label" parent="EnemyPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "🧑‍💼 临时需求"
+horizontal_alignment = 1
+
+[node name="EnemyHp" type="Label" parent="EnemyPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "工作量 18/18"
+horizontal_alignment = 1
+
+[node name="EnemyIntent" type="Label" parent="EnemyPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 0.78, 0.25, 1)
+text = "意图：造成 5 点精力伤害"
+horizontal_alignment = 1
+
+[node name="LogLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400
+offset_top = 236
+offset_right = 400
+offset_bottom = 266
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.65, 0.7, 0.78, 1)
+text = ""
+horizontal_alignment = 1
+
+[node name="HandBox" type="HFlowContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -560
+offset_top = -280
+offset_right = 560
+offset_bottom = -40
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="EndTurnButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 1110
+offset_top = -66
+offset_right = 1262
+offset_bottom = -20
+grow_vertical = 0
+theme_override_font_sizes/font_size = 22
+text = "结束回合"
+
+[node name="HintLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16
+offset_top = -30
+offset_right = 760
+offset_bottom = -8
+grow_vertical = 0
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.55, 0.58, 0.66, 1)
+text = "点击手牌出牌（消耗行动点）· 结束回合后敌人按意图行动"
+
+[node name="RewardOverlay" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="RewardOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="RewardTitle" type="Label" parent="RewardOverlay"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300
+offset_top = 150
+offset_right = 300
+offset_bottom = 190
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(1, 0.92, 0.6, 1)
+text = "绩效不错！选一张新卡加入牌组"
+horizontal_alignment = 1
+
+[node name="RewardBox" type="HBoxContainer" parent="RewardOverlay"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -330
+offset_top = -70
+offset_right = 330
+offset_bottom = 80
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="EndOverlay" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="EndOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="EndLabel" type="Label" parent="EndOverlay"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320
+offset_top = -90
+offset_right = 320
+offset_bottom = 30
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
+text = "结束"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RestartButton" type="Button" parent="EndOverlay"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -130
+offset_top = 54
+offset_right = 130
+offset_bottom = 114
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 24
+text = "再来一局（空格）"

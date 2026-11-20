@@ -1,0 +1,22 @@
+[
+  {"id":"moyu","name":"摸鱼","cost":0,"type":"skill","rarity":"common","desc":"回复4精力，压力-2。","effects":[{"type":"heal","value":4},{"type":"stress","value":-2}]},
+  {"id":"coffee","name":"咖啡续命","cost":0,"type":"skill","rarity":"common","desc":"回复8精力，压力+4。","effects":[{"type":"heal","value":8},{"type":"stress","value":4}]},
+  {"id":"shuaiguo","name":"甩锅","cost":1,"type":"attack","rarity":"common","desc":"造成6进度，压力+6。","effects":[{"type":"progress","value":6},{"type":"stress","value":6}]},
+  {"id":"laqun","name":"拉群对齐","cost":1,"type":"skill","rarity":"common","desc":"获得6护盾，抽1张牌。","effects":[{"type":"block","value":6},{"type":"draw","value":1}]},
+  {"id":"ppt","name":"PPT美化","cost":1,"type":"attack","rarity":"common","desc":"造成8进度。","effects":[{"type":"progress","value":8}]},
+  {"id":"xiangshang","name":"向上管理","cost":1,"type":"skill","rarity":"uncommon","desc":"获得8护盾，压力-4。","effects":[{"type":"block","value":8},{"type":"stress","value":-4}]},
+  {"id":"jiaban","name":"加班冲刺","cost":2,"type":"attack","rarity":"uncommon","desc":"造成16进度，压力+10。","effects":[{"type":"progress","value":16},{"type":"stress","value":10}]},
+  {"id":"yidu","name":"已读不回","cost":1,"type":"skill","rarity":"common","desc":"获得5护盾，压力-3。","effects":[{"type":"block","value":5},{"type":"stress","value":-3}]},
+  {"id":"jieli","name":"借力打力","cost":1,"type":"attack","rarity":"uncommon","desc":"造成5进度，获得5护盾。","effects":[{"type":"progress","value":5},{"type":"block","value":5}]},
+  {"id":"fupan","name":"复盘报告","cost":1,"type":"skill","rarity":"uncommon","desc":"抽2张牌，压力+2。","effects":[{"type":"draw","value":2},{"type":"stress","value":2}]},
+  {"id":"qianggong","name":"抢功","cost":1,"type":"attack","rarity":"rare","desc":"造成10进度，压力+8。","effects":[{"type":"progress","value":10},{"type":"stress","value":8}]},
+  {"id":"beiguo","name":"背锅","cost":0,"type":"skill","rarity":"rare","desc":"获得10护盾，压力+12。","effects":[{"type":"block","value":10},{"type":"stress","value":12}]},
+  {"id":"huabing","name":"画饼","cost":1,"type":"skill","rarity":"uncommon","desc":"行动点+1，抽1张牌，压力+3。","effects":[{"type":"energy","value":1},{"type":"draw","value":1},{"type":"stress","value":3}]},
+  {"id":"okr","name":"OKR对齐","cost":2,"type":"attack","rarity":"uncommon","desc":"造成14进度，压力-5。","effects":[{"type":"progress","value":14},{"type":"stress","value":-5}]},
+  {"id":"xuqiu","name":"需求评审","cost":1,"type":"skill","rarity":"common","desc":"获得7护盾。","effects":[{"type":"block","value":7}]},
+  {"id":"huidu","name":"灰度发布","cost":1,"type":"attack","rarity":"common","desc":"造成7进度，抽1张牌。","effects":[{"type":"progress","value":7},{"type":"draw","value":1}]},
+  {"id":"jiangben","name":"降本增效","cost":2,"type":"attack","rarity":"rare","desc":"造成20进度，压力+12。","effects":[{"type":"progress","value":20},{"type":"stress","value":12}]},
+  {"id":"shixisheng","name":"实习生代劳","cost":1,"type":"skill","rarity":"rare","desc":"行动点+1，抽2张牌，压力+5。","effects":[{"type":"energy","value":1},{"type":"draw","value":2},{"type":"stress","value":5}]},
+  {"id":"huibao","name":"汇报邀功","cost":2,"type":"attack","rarity":"rare","desc":"造成18进度，压力-3。","effects":[{"type":"progress","value":18},{"type":"stress","value":-3}]},
+  {"id":"lizhi","name":"离职威胁","cost":2,"type":"skill","rarity":"rare","desc":"获得15护盾，压力-10，抽1张牌。","effects":[{"type":"block","value":15},{"type":"stress","value":-10},{"type":"draw","value":1}]}
+]

@@ -1,0 +1,14 @@
+[
+  {"node":1,"enemy":"temporary"},
+  {"node":2,"enemy":"weekly"},
+  {"node":3,"enemy":"cross"},
+  {"node":4,"enemy":"boss_pie"},
+  {"node":5,"enemy":"outage"},
+  {"node":6,"enemy":"perf"},
+  {"node":7,"enemy":"competitor"},
+  {"node":8,"enemy":"change"},
+  {"node":9,"enemy":"team"},
+  {"node":10,"enemy":"outage","hpMul":1.3,"mul":1.3,"suffix":"加强"},
+  {"node":11,"enemy":"competitor","hpMul":1.3,"mul":1.3,"suffix":"加强"},
+  {"node":12,"enemy":"layoff"}
+]
