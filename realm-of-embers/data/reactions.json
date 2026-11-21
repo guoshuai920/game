@@ -1,0 +1,5 @@
+[
+	{"pair":"fire+ice","id":"steam","name":"蒸汽爆发","emoji":"⚗️","radius":70,"dmg":22,"desc":"小范围AOE伤害"},
+	{"pair":"ice+lightning","id":"superconductor","name":"超导","emoji":"🧲","armorMul":0.5,"dur":5.0,"desc":"护甲减半5秒"},
+	{"pair":"fire+lightning","id":"overload","name":"感电过载","emoji":"💥","stun":0.5,"desc":"眩晕0.5秒"}
+]

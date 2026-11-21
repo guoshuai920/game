@@ -1,0 +1,17 @@
+[
+	{"hpMul":1.0,"groups":[{"enemy":"goblin","count":10,"interval":0.8}]},
+	{"hpMul":1.0,"groups":[{"enemy":"goblin","count":8,"interval":0.8},{"enemy":"orc","count":5,"interval":1.2}]},
+	{"hpMul":1.1,"groups":[{"enemy":"wolf","count":8,"interval":0.9},{"enemy":"goblin","count":6,"interval":0.6}]},
+	{"hpMul":1.2,"groups":[{"enemy":"shield","count":6,"interval":1.5},{"enemy":"orc","count":4,"interval":1.0}]},
+	{"hpMul":1.25,"groups":[{"enemy":"bat","count":10,"interval":0.7},{"enemy":"wolf","count":4,"interval":0.8}]},
+	{"hpMul":1.35,"groups":[{"enemy":"shaman","count":3,"interval":2.0},{"enemy":"orc","count":6,"interval":0.9},{"enemy":"shield","count":2,"interval":1.5}]},
+	{"hpMul":1.45,"groups":[{"enemy":"slime","count":10,"interval":0.9},{"enemy":"bat","count":6,"interval":0.7}]},
+	{"hpMul":1.6,"groups":[{"enemy":"gargoyle","count":2,"interval":6.0}]},
+	{"hpMul":1.75,"groups":[{"enemy":"wolf","count":10,"interval":0.6},{"enemy":"shield","count":6,"interval":1.3},{"enemy":"goblin","count":10,"interval":0.4}]},
+	{"hpMul":1.9,"groups":[{"enemy":"necro","count":3,"interval":5.0},{"enemy":"orc","count":8,"interval":0.9}]},
+	{"hpMul":2.0,"groups":[{"enemy":"bat","count":12,"interval":0.5},{"enemy":"shield","count":8,"interval":1.2},{"enemy":"shaman","count":2,"interval":2.5}]},
+	{"hpMul":2.1,"groups":[{"enemy":"sandworm","count":4,"interval":4.0},{"enemy":"slime","count":12,"interval":0.7},{"enemy":"shaman","count":2,"interval":2.5}]},
+	{"hpMul":2.25,"groups":[{"enemy":"shield","count":10,"interval":1.0},{"enemy":"necro","count":4,"interval":4.0},{"enemy":"orc","count":10,"interval":0.6}]},
+	{"hpMul":2.4,"groups":[{"enemy":"shadowking","count":1,"interval":2.0},{"enemy":"wolf","count":16,"interval":0.5},{"enemy":"bat","count":8,"interval":0.7}]},
+	{"hpMul":2.6,"groups":[{"enemy":"inferno","count":1,"interval":2.0},{"enemy":"shield","count":8,"interval":1.5},{"enemy":"necro","count":2,"interval":5.0}]}
+]

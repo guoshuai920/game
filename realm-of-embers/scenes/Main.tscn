@@ -1,0 +1,314 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/path_view.gd" id="2_path"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_main")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.07, 0.09, 0.13, 1)
+
+[node name="PathView" type="Node2D" parent="."]
+script = ExtResource("2_path")
+
+[node name="Towers" type="Node2D" parent="."]
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Projectiles" type="Node2D" parent="."]
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 16
+offset_top = 10
+offset_right = 1264
+offset_bottom = 44
+theme_override_constants/separation = 28
+
+[node name="WaveLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "准备阶段"
+
+[node name="GoldLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "💰 220"
+
+[node name="LivesLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "🏰 20"
+
+[node name="PreviewLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.88, 0.55, 1)
+text = "下一波："
+
+[node name="RestartRunButton" type="Button" parent="TopBar"]
+layout_mode = 2
+custom_minimum_size = Vector2(64, 30)
+theme_override_font_sizes/font_size = 15
+text = "重开"
+
+[node name="QuitButton" type="Button" parent="TopBar"]
+layout_mode = 2
+custom_minimum_size = Vector2(64, 30)
+theme_override_font_sizes/font_size = 15
+text = "退出"
+
+[node name="SaveOverlay" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="SaveOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.78)
+
+[node name="Title" type="Label" parent="SaveOverlay"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300
+offset_top = 140
+offset_right = 300
+offset_bottom = 190
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 34
+theme_override_colors/font_color = Color(1, 0.92, 0.6, 1)
+text = "选择进度"
+horizontal_alignment = 1
+
+[node name="SlotBox" type="VBoxContainer" parent="SaveOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -330
+offset_top = -80
+offset_right = 330
+offset_bottom = 140
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="NewGameButton" type="Button" parent="SaveOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150
+offset_top = 170
+offset_right = 150
+offset_bottom = 220
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 20
+text = "全新开局"
+
+[node name="LogLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16
+offset_top = -122
+offset_right = 1010
+offset_bottom = -96
+grow_vertical = 0
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.78, 0.84, 0.92, 1)
+text = ""
+
+[node name="ShopBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16
+offset_top = -90
+offset_right = 1010
+offset_bottom = -8
+grow_vertical = 0
+theme_override_constants/separation = 8
+
+[node name="SelPanel" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -470
+offset_top = -78
+offset_right = -230
+offset_bottom = -16
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 6
+visible = false
+
+[node name="SellButton" type="Button" parent="SelPanel"]
+layout_mode = 2
+custom_minimum_size = Vector2(110, 56)
+theme_override_font_sizes/font_size = 16
+text = "卖出 +0"
+
+[node name="ModeButton" type="Button" parent="SelPanel"]
+layout_mode = 2
+custom_minimum_size = Vector2(114, 56)
+theme_override_font_sizes/font_size = 16
+text = "目标：前排"
+
+[node name="NextWaveButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -220
+offset_top = -78
+offset_right = -20
+offset_bottom = -16
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 22
+text = "开始第 1 波"
+
+[node name="UpgradeOverlay" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="UpgradeOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="Title" type="Label" parent="UpgradeOverlay"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300
+offset_top = 130
+offset_right = 300
+offset_bottom = 180
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1, 0.92, 0.6, 1)
+text = "战后强化 · 三选一"
+horizontal_alignment = 1
+
+[node name="ChoiceBox" type="HBoxContainer" parent="UpgradeOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400
+offset_top = -80
+offset_right = 400
+offset_bottom = 90
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="EndOverlay" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="EndOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="EndLabel" type="Label" parent="EndOverlay"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320
+offset_top = -90
+offset_right = 320
+offset_bottom = 30
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
+text = "结束"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RestartButton" type="Button" parent="EndOverlay"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -130
+offset_top = 54
+offset_right = 130
+offset_bottom = 114
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 22
+text = "再来一局（空格）"
