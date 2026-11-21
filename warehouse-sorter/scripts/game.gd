@@ -155,7 +155,7 @@ func _pack_tag(tag: String) -> void:
 		base += p.score_value()
 		center += p.position + p.size * 0.5
 		grid.remove_parcel(p)
-		var tw := p.create_tween()
+		var tw: Tween = p.create_tween()
 		tw.tween_property(p, "scale", Vector2(0.1, 0.1), 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 		tw.tween_callback(p.queue_free)
 	center /= maxf(1.0, float(removed.size()))
@@ -194,7 +194,7 @@ func _fail_parcel(p, reason: String) -> void:
 	score += penalty
 	grid.remove_parcel(p)
 	var pos: Vector2 = p.position + p.size * 0.5
-	var tw := p.create_tween()
+	var tw: Tween = p.create_tween()
 	tw.tween_property(p, "modulate:a", 0.0, 0.25)
 	tw.tween_callback(p.queue_free)
 	_float_text("%s %d" % [reason, penalty], Color(1.0, 0.45, 0.45), pos)

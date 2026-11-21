@@ -123,14 +123,17 @@ alignment = 1
 [node name="EndTurnButton" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = 3
+anchor_left = 1.0
 anchor_top = 1.0
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 1110
-offset_top = -66
-offset_right = 1262
-offset_bottom = -20
+offset_left = -190
+offset_top = -72
+offset_right = -24
+offset_bottom = -24
+grow_horizontal = 0
 grow_vertical = 0
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 24
 text = "结束回合"
 
 [node name="HintLabel" type="Label" parent="."]

@@ -210,6 +210,8 @@ func _play_card(index: int) -> void:
 func _end_turn() -> void:
 	if ended or pending_reward:
 		return
+	if energy > 0 and not hand.is_empty():
+		_log("回合结束：弃掉 %d 张手牌（还剩 %d 行动点没用）" % [hand.size(), energy])
 	for card in hand:
 		discard_pile.append(card)
 	hand = []
@@ -354,6 +356,8 @@ func _render_hand() -> void:
 		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		b.text = "%s（%d）\n%s" % [String(card.get("name", "")), cost, String(card.get("desc", ""))]
 		b.disabled = ended or pending_reward or energy < cost
+		if not ended and not pending_reward and energy < cost:
+			b.text += "\n⚡ 行动点不足"
 		b.pressed.connect(_play_card.bind(i))
 		hand_box.add_child(b)
 

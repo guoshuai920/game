@@ -30,7 +30,11 @@ func setup(p_def: Dictionary) -> void:
 		timer_left = float(p_def.timer)
 	if p_def.has("rule"):
 		break_threshold = _parse_rule(String(p_def.rule))
-	_refresh()
+	if is_inside_tree():
+		_refresh()
+	else:
+		# 尚未进树时 @onready 引用为空，推迟到进树后再刷新
+		_refresh.call_deferred()
 
 
 func _parse_rule(rule: String) -> int:
