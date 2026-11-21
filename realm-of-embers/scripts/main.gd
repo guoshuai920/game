@@ -193,6 +193,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			if k.keycode == KEY_SPACE or k.keycode == KEY_ENTER:
 				get_tree().reload_current_scene()
 		return
+	if event is InputEventKey and event.is_pressed() and (event as InputEventKey).keycode == KEY_ESCAPE:
+		# ESC：取消拖拽 / 取消选塔（桌面快捷键，触屏用取消按钮）
+		_cancel_drag()
+		shop_sel = ""
+		sel_tower = null
+		_render()
+		return
 	if event is InputEventMouseButton and event.pressed:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
@@ -208,15 +215,18 @@ func _unhandled_input(event: InputEvent) -> void:
 				_render()
 			else:
 				_handle_click(pos)
-		elif mb.button_index == MOUSE_BUTTON_RIGHT:
-			if drag_tower != null:
-				var src := slots[drag_tower.slot_index] as Dictionary
-				drag_tower.position = src.get("pos") as Vector2
-				drag_tower.z_index = 0
-				drag_tower = null
-			shop_sel = ""
-			sel_tower = null
-			_render()
+
+
+## 取消拖拽：塔弹回原位（ESC 快捷键）
+func _cancel_drag() -> void:
+	if drag_tower == null:
+		return
+	if is_instance_valid(drag_tower):
+		var src := slots[drag_tower.slot_index] as Dictionary
+		drag_tower.position = src.get("pos") as Vector2
+		drag_tower.z_index = 0
+	drag_tower = null
+	_render()
 
 
 ## 拖拽跟手：用 _input 观察移动（不消费事件，UI 区域也能跟）
@@ -248,7 +258,9 @@ func _handle_click(pos: Vector2) -> void:
 	if si >= 0 and shop_sel != "":
 		_build_tower(shop_sel, si)
 		return
+	# 点商店以外的地方：取消选塔 + 退出建塔模式
 	sel_tower = null
+	shop_sel = ""
 	_render()
 
 
@@ -294,12 +306,15 @@ func _slot_at(pos: Vector2) -> int:
 
 
 func _on_shop_click(fid: String) -> void:
-	shop_sel = fid
-	sel_tower = null
-	var fam := DataLoader.tower(fid)
-	log_msg("已选 %s（%d金）——点击空格位放置，右键取消" % [
-		"%s %s" % [fam.get("emoji", ""), fam.get("name", "")], int(fam.get("cost", 0)),
-	])
+	if shop_sel == fid:
+		shop_sel = ""  # 再点一次同一个塔按钮 = 取消选择（触屏友好）
+	else:
+		shop_sel = fid
+		sel_tower = null
+		var fam := DataLoader.tower(fid)
+		log_msg("已选 %s（%d金）——点击空格位连放；点商店以外的地方即取消" % [
+			"%s %s" % [fam.get("emoji", ""), fam.get("name", "")], int(fam.get("cost", 0)),
+		])
 	_render()
 
 
