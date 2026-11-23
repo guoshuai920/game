@@ -43,7 +43,13 @@ var _summon_cd := 0.0
 var _disable_cd := 0.0
 var _can_disable := false
 var _rage_done: Array = []
-var _emoji_label: Label
+var _sprite: AnimatedSprite2D
+var _base_scale := Vector2.ONE
+var _punch_tw: Tween = null
+var _fx_burn: AnimatedSprite2D = null
+var _fx_slow: AnimatedSprite2D = null
+var _fx_poison: AnimatedSprite2D = null
+var _fx_stun: AnimatedSprite2D = null
 
 
 func setup(p_game, p_id: String, p_mul: float) -> void:
@@ -76,18 +82,31 @@ func setup(p_game, p_id: String, p_mul: float) -> void:
 	_wp = r.get("path", [])
 	var c: Array = r.get("castle", [1200, 600])
 	_castle = Vector2(float(c[0]), float(c[1]))
-	_make_label()
+	_make_sprite()
 
 
-func _make_label() -> void:
-	_emoji_label = Label.new()
-	_emoji_label.text = emoji
-	_emoji_label.position = Vector2(-20, -30)
-	_emoji_label.size = Vector2(40, 40)
-	_emoji_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_emoji_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_emoji_label.add_theme_font_size_override("font_size", 30)
-	add_child(_emoji_label)
+func _make_sprite() -> void:
+	_sprite = UnitsBank.make(id)
+	if _sprite == null:
+		return
+	_base_scale = _sprite.scale
+	if bool(DataLoader.enemy(id).get("boss", false)):
+		_base_scale *= 1.2
+	_sprite.scale = _base_scale
+	add_child(_sprite)
+
+
+## 按 cond 维护挂在身上的循环状态特效（灼烧/冻结/中毒/感电）
+func _attach_status(cond: bool, fx_name: String, store: String, y_off: float) -> void:
+	var cur: AnimatedSprite2D = get(store)
+	if cond and cur == null:
+		var s := FxBank.play(self, fx_name, Vector2(0, y_off))
+		if s != null:
+			s.z_index = 2
+			set(store, s)
+	elif not cond and cur != null:
+		cur.queue_free()
+		set(store, null)
 
 
 func armor_mult() -> float:
@@ -123,6 +142,10 @@ func _process(delta: float) -> void:
 	_tick_status(delta)
 	if dead:
 		return
+	_attach_status(burn_timer > 0.0, "st_burn", "_fx_burn", -16.0)
+	_attach_status(slow_timer > 0.0, "st_slow", "_fx_slow", -16.0)
+	_attach_status(poison_timer > 0.0, "st_poison", "_fx_poison", 2.0)
+	_attach_status(stun_timer > 0.0, "st_stun", "_fx_stun", -16.0)
 	if stun_timer > 0.0:
 		stun_timer -= delta
 		modulate = Color(1.0, 0.95, 0.4)
@@ -200,8 +223,20 @@ func take_damage(amount: float, element: String, pierce: float = 0.0) -> void:
 	if element != "none" and element != "reaction":
 		_register_element(element)
 	queue_redraw()
+	_punch()
 	if hp <= 0.0:
 		_die()
+
+
+## 受击弹跳：精灵短暂放大后回弹
+func _punch() -> void:
+	if _sprite == null:
+		return
+	if _punch_tw != null and _punch_tw.is_valid():
+		_punch_tw.kill()
+	_sprite.scale = _base_scale * 1.18
+	_punch_tw = create_tween()
+	_punch_tw.tween_property(_sprite, "scale", _base_scale, 0.12)
 
 
 ## 元素标签：2 秒内叠到两种不同元素 → 查反应表触发
@@ -229,12 +264,15 @@ func _trigger_reaction(r: Dictionary) -> void:
 		"steam":
 			var dmg := float(r.get("dmg", 20.0)) * (1.0 + float(game.get_mod("reaction", 0.0)))
 			game.aoe_damage(position, float(r.get("radius", 70.0)), dmg)
+			FxBank.play(game.fx_ground, "rx_steam", position, {"scale": 1.1})
 			game.log_msg("⚗️ 蒸汽爆发！")
 		"superconductor":
 			_super_timer = maxf(_super_timer, float(r.get("dur", 5.0)))
+			FxBank.play(game.fx_air, "rx_superconductor", position)
 			game.log_msg("🧲 超导！护甲减半")
 		"overload":
 			stun_timer = maxf(stun_timer, float(r.get("stun", 0.5)))
+			FxBank.play(game.fx_air, "rx_overload", position)
 			game.log_msg("💥 感电过载！眩晕")
 
 
@@ -249,6 +287,7 @@ func _specials(delta: float) -> void:
 			if hp / maxf(1.0, max_hp) <= float(rr.get("pct", 0.0)) and not _rage_done.has(key):
 				_rage_done.append(key)
 				speed_buff *= float(rr.get("mul", 1.2))
+				FxBank.play(game.fx_air, "fx_rage", position, {"life": 1.2})
 				game.log_msg("🔥 %s 进入狂暴！" % display_name)
 	# 群体治疗
 	if _heal_cd > 0.0:
@@ -258,6 +297,7 @@ func _specials(delta: float) -> void:
 			_heal_cd = float(heal.get("interval", 2.0))
 			var radius := float(heal.get("radius", 100.0))
 			var amt := float(heal.get("amount", 10.0))
+			FxBank.play(game.fx_ground, "fx_heal", position)
 			for e in game.alive_enemies():
 				var en := e as Enemy
 				if not en.dead and en.position.distance_to(position) <= radius and en.hp < en.max_hp:
@@ -269,6 +309,7 @@ func _specials(delta: float) -> void:
 		if _summon_cd <= 0.0:
 			var summon := def.get("summon", {}) as Dictionary
 			_summon_cd = float(summon.get("interval", 4.0))
+			FxBank.play(game.fx_ground, "fx_summon", position, {"scale": 0.9})
 			game.spawn_enemy_at(String(summon.get("into", "skeleton")), position, spawn_mul)
 			game.log_msg("💀 %s 召唤了骷髅！" % display_name)
 	# 瘫痪附近的塔
@@ -296,6 +337,8 @@ func _move(delta: float) -> void:
 	if flying:
 		var d := _castle - position
 		var step := sp * delta
+		if _sprite != null:
+			_sprite.flip_h = d.x < -1.0
 		if d.length() <= step:
 			_leak()
 			return
@@ -307,6 +350,8 @@ func _move(delta: float) -> void:
 		return
 	var target_p := Vector2(float(_wp[wp_i + 1][0]), float(_wp[wp_i + 1][1]))
 	var d2 := target_p - position
+	if _sprite != null:
+		_sprite.flip_h = d2.x < -1.0
 	var step2 := sp * delta
 	if d2.length() <= step2:
 		position = target_p
@@ -328,5 +373,18 @@ func _die() -> void:
 	if dead:
 		return
 	dead = true
+	_death_fx()
 	game.on_enemy_died(self)
 	queue_free()
+
+
+## 死亡特效：Boss 灰化 / 杂兵化烟 / 普通击杀化烟+金币
+func _death_fx() -> void:
+	if game == null or game.fx_air == null:
+		return
+	var fx := "death_coin"
+	if bool(DataLoader.enemy(id).get("boss", false)):
+		fx = "death_boss"
+	elif id == "skeleton" or id == "slimelet":
+		fx = "death_poof"
+	FxBank.play(game.fx_air, fx, position)

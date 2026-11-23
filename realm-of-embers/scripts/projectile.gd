@@ -3,19 +3,13 @@ extends Node2D
 ## 投射物：追踪目标或飞向落点；命中时结算伤害 / AOE / 元素效果。
 
 const SPEED := 340.0
-const ELEMENT_COLORS := {
-	"none": Color(1, 1, 1),
-	"fire": Color(1.0, 0.5, 0.3),
-	"ice": Color(0.6, 0.85, 1.0),
-	"lightning": Color(1.0, 0.9, 0.4),
-	"poison": Color(0.6, 1.0, 0.5),
-}
 
 var payload: Dictionary = {}
 var target: Enemy = null
 var target_pos := Vector2.ZERO
 var game = null
 var _dead := false
+var _sprite: AnimatedSprite2D
 
 
 func launch(p_game, from: Vector2, to: Vector2, p_payload: Dictionary, p_target: Enemy = null) -> void:
@@ -26,19 +20,23 @@ func launch(p_game, from: Vector2, to: Vector2, p_payload: Dictionary, p_target:
 	payload = p_payload
 	if target != null:
 		target_pos = target.position
-	var l := Label.new()
 	var elem := String(payload.get("element", "none"))
+	var spr_id := "proj_arrow"
 	if payload.has("aoe"):
-		l.text = "💣" if elem == "none" else "☄️"
+		spr_id = "proj_bomb"
 	else:
-		l.text = "✦"
-	l.size = Vector2(28, 28)
-	l.position = Vector2(-14, -14)
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	l.add_theme_font_size_override("font_size", 20)
-	l.modulate = ELEMENT_COLORS.get(elem, Color(1, 1, 1)) as Color
-	add_child(l)
+		match elem:
+			"fire":
+				spr_id = "proj_fire"
+			"ice":
+				spr_id = "proj_ice"
+			"lightning":
+				spr_id = "proj_volt"
+			"poison":
+				spr_id = "proj_venom"
+	_sprite = UnitsBank.make(spr_id)
+	if _sprite != null:
+		add_child(_sprite)
 
 
 func _process(delta: float) -> void:
@@ -47,6 +45,9 @@ func _process(delta: float) -> void:
 	if target != null and not target.dead:
 		target_pos = target.position
 	var to := target_pos - position
+	if _sprite != null:
+		# 弹道素材按"右上 45°"绘制，旋转到运动方向
+		_sprite.rotation = to.angle() + PI * 0.25
 	var step := SPEED * delta
 	if to.length() <= step:
 		position = target_pos
@@ -75,7 +76,33 @@ func _hit() -> void:
 		if target != null and not target.dead:
 			target.take_damage(dmg, elem, pierce)
 			_apply_effects(target)
+	_hit_fx(elem)
 	queue_free()
+
+
+## 命中特效：AOE 走地面层，单体命中走上层；元素对应色板变体
+func _hit_fx(elem: String) -> void:
+	if game == null:
+		return
+	if payload.has("aoe"):
+		var aoe_name := "aoe_bomb"
+		if elem == "fire":
+			aoe_name = "aoe_fire"
+		elif elem == "poison":
+			aoe_name = "aoe_venom"
+		FxBank.play(game.fx_ground, aoe_name, position)
+		return
+	var hit_name := "hit_arrow"
+	match elem:
+		"fire":
+			hit_name = "hit_fire"
+		"ice":
+			hit_name = "hit_ice"
+		"lightning":
+			hit_name = "hit_lightning"
+		"poison":
+			hit_name = "hit_poison"
+	FxBank.play(game.fx_air, hit_name, position)
 
 
 func _apply_effects(e: Enemy) -> void:

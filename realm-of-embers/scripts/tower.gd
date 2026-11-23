@@ -16,9 +16,13 @@ var target_mode := 0  # 0=前排 1=高血 2=低血
 var cooldown := 0.0
 var disabled_time := 0.0
 
-var _emoji_label: Label
+var _sprite: AnimatedSprite2D
+var _sprite_family := ""
 var _stars_label: Label
+var _recoil_tw: Tween = null
+var _fx_dis: AnimatedSprite2D = null
 var _display_name := ""
+var _tint := Color.WHITE
 
 
 func setup(p_game, p_family: String, p_level: int, p_cost: int, p_high: bool) -> void:
@@ -35,32 +39,36 @@ func setup(p_game, p_family: String, p_level: int, p_cost: int, p_high: bool) ->
 
 
 func _ready() -> void:
-	_emoji_label = Label.new()
-	_emoji_label.position = Vector2(-26, -42)
-	_emoji_label.size = Vector2(52, 52)
-	_emoji_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_emoji_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_emoji_label.add_theme_font_size_override("font_size", 36)
-	add_child(_emoji_label)
 	_stars_label = Label.new()
-	_stars_label.position = Vector2(-26, 10)
+	_stars_label.position = Vector2(-26, 26)
 	_stars_label.size = Vector2(52, 18)
 	_stars_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_stars_label.add_theme_font_size_override("font_size", 13)
 	add_child(_stars_label)
+	_refresh_visual()
 
 
 func _refresh_visual() -> void:
-	if _emoji_label == null:
-		return
-	var fam := DataLoader.tower(family_id)
-	var emoji := String(fam.get("emoji", "?"))
+	if family_id == "":
+		return  # _ready 首次触发时 setup 还没来，等真正族名
+	if _sprite == null or _sprite_family != family_id:
+		if _sprite != null:
+			_sprite.queue_free()
+		_sprite = UnitsBank.make("tower_" + family_id)
+		if _sprite != null:
+			add_child(_sprite)
+		_sprite_family = family_id
+	if _stars_label != null:
+		_stars_label.text = "★".repeat(level)
+	_tint = Color.WHITE
+	var fam2 := DataLoader.tower(family_id)
+	_display_name = String(fam2.get("name", family_id))
 	if branch_id != "":
 		var b := DataLoader.branch_def(family_id, branch_id)
-		emoji = String(b.get("emoji", emoji))
 		_display_name = String(b.get("name", _display_name))
-	_emoji_label.text = emoji
-	_stars_label.text = "★".repeat(level)
+		_tint = Color(1.12, 1.05, 0.82)  # 进化后微微镀金
+	if _sprite != null:
+		_sprite.modulate = _tint
 
 
 func branch_def_dict() -> Dictionary:
@@ -91,8 +99,13 @@ func _process(delta: float) -> void:
 	if disabled_time > 0.0:
 		disabled_time -= delta
 		modulate = Color(0.45, 0.45, 0.5)
+		if _fx_dis == null:
+			_fx_dis = FxBank.play(self, "fx_disable", Vector2(0, -18))
 		return
-	modulate = Color.WHITE
+	if _fx_dis != null:
+		_fx_dis.queue_free()
+		_fx_dis = null
+	modulate = _tint
 	cooldown -= delta
 	if cooldown > 0.0:
 		return
@@ -152,6 +165,7 @@ func _fire_at(target: Variant) -> void:
 		dmg *= 2.0
 	if family_id == "thunder":
 		_chain_hit(target, dmg, int(stat("chain")))
+		_recoil()
 		return
 	var payload := {"dmg": dmg, "element": element, "pierce": pierce}
 	var aoe := stat("aoe")
@@ -174,12 +188,25 @@ func _fire_at(target: Variant) -> void:
 		p.launch(game, position, (target as Node2D).position, payload)
 	else:
 		p.launch(game, position, Vector2.ZERO, payload, target)
+	_recoil()
+
+
+## 开火后坐：精灵下压回弹
+func _recoil() -> void:
+	if _sprite == null:
+		return
+	if _recoil_tw != null and _recoil_tw.is_valid():
+		_recoil_tw.kill()
+	_sprite.position.y = 3.0
+	_recoil_tw = create_tween()
+	_recoil_tw.tween_property(_sprite, "position:y", 0.0, 0.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 ## 雷塔连锁：立即结算，向最近未命中目标弹跳
 func _chain_hit(first: Variant, dmg: float, chains: int) -> void:
 	var hit: Array = [first]
 	first.take_damage(dmg, element)
+	FxBank.play(game.fx_air, "hit_lightning", (first as Node2D).position)
 	var cur := first as Node2D
 	var cur_dmg := dmg
 	for i in chains:
@@ -196,6 +223,7 @@ func _chain_hit(first: Variant, dmg: float, chains: int) -> void:
 			break
 		cur_dmg *= 0.7
 		(nxt as Node2D).take_damage(cur_dmg, element)
+		FxBank.play(game.fx_air, "hit_lightning", (nxt as Node2D).position)
 		game.path_view.flash(cur.position, (nxt as Node2D).position, Color(0.75, 0.85, 1.0, 0.9))
 		hit.append(nxt)
 		cur = nxt as Node2D

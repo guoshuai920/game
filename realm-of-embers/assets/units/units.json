@@ -1,0 +1,254 @@
+{
+ "goblin": {
+  "image": "goblin.png",
+  "fw": 12,
+  "fh": 14,
+  "frames": 4,
+  "fps": 8,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "orc": {
+  "image": "orc.png",
+  "fw": 14,
+  "fh": 16,
+  "frames": 4,
+  "fps": 8,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "wolf": {
+  "image": "wolf.png",
+  "fw": 16,
+  "fh": 12,
+  "frames": 2,
+  "fps": 5,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "shield": {
+  "image": "shield.png",
+  "fw": 14,
+  "fh": 16,
+  "frames": 4,
+  "fps": 8,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "bat": {
+  "image": "bat.png",
+  "fw": 14,
+  "fh": 9,
+  "frames": 2,
+  "fps": 5,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "shaman": {
+  "image": "shaman.png",
+  "fw": 12,
+  "fh": 16,
+  "frames": 4,
+  "fps": 8,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "slime": {
+  "image": "slime.png",
+  "fw": 14,
+  "fh": 9,
+  "frames": 2,
+  "fps": 5,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "slimelet": {
+  "image": "slimelet.png",
+  "fw": 9,
+  "fh": 6,
+  "frames": 2,
+  "fps": 5,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "gargoyle": {
+  "image": "gargoyle.png",
+  "fw": 18,
+  "fh": 18,
+  "frames": 2,
+  "fps": 5,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "necro": {
+  "image": "necro.png",
+  "fw": 12,
+  "fh": 16,
+  "frames": 4,
+  "fps": 8,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "skeleton": {
+  "image": "skeleton.png",
+  "fw": 10,
+  "fh": 13,
+  "frames": 4,
+  "fps": 8,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "sandworm": {
+  "image": "sandworm.png",
+  "fw": 16,
+  "fh": 12,
+  "frames": 2,
+  "fps": 5,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "shadowking": {
+  "image": "shadowking.png",
+  "fw": 15,
+  "fh": 17,
+  "frames": 4,
+  "fps": 8,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "inferno": {
+  "image": "inferno.png",
+  "fw": 18,
+  "fh": 18,
+  "frames": 2,
+  "fps": 5,
+  "scale": 2,
+  "kind": "unit"
+ },
+ "tower_arrow": {
+  "image": "tower_arrow.png",
+  "fw": 14,
+  "fh": 16,
+  "frames": 1,
+  "fps": 1,
+  "scale": 2,
+  "kind": "static"
+ },
+ "tower_frost": {
+  "image": "tower_frost.png",
+  "fw": 14,
+  "fh": 16,
+  "frames": 1,
+  "fps": 1,
+  "scale": 2,
+  "kind": "static"
+ },
+ "tower_thunder": {
+  "image": "tower_thunder.png",
+  "fw": 14,
+  "fh": 16,
+  "frames": 1,
+  "fps": 1,
+  "scale": 2,
+  "kind": "static"
+ },
+ "tower_flame": {
+  "image": "tower_flame.png",
+  "fw": 14,
+  "fh": 16,
+  "frames": 1,
+  "fps": 1,
+  "scale": 2,
+  "kind": "static"
+ },
+ "tower_bomb": {
+  "image": "tower_bomb.png",
+  "fw": 14,
+  "fh": 16,
+  "frames": 1,
+  "fps": 1,
+  "scale": 2,
+  "kind": "static"
+ },
+ "tower_venom": {
+  "image": "tower_venom.png",
+  "fw": 14,
+  "fh": 16,
+  "frames": 1,
+  "fps": 1,
+  "scale": 2,
+  "kind": "static"
+ },
+ "castle": {
+  "image": "castle.png",
+  "fw": 18,
+  "fh": 14,
+  "frames": 1,
+  "fps": 1,
+  "scale": 3,
+  "kind": "static"
+ },
+ "proj_none": {
+  "image": "proj_none.png",
+  "fw": 9,
+  "fh": 9,
+  "frames": 1,
+  "fps": 1,
+  "scale": 1.6,
+  "kind": "static"
+ },
+ "proj_arrow": {
+  "image": "proj_arrow.png",
+  "fw": 9,
+  "fh": 9,
+  "frames": 1,
+  "fps": 1,
+  "scale": 1.6,
+  "kind": "static"
+ },
+ "proj_ice": {
+  "image": "proj_ice.png",
+  "fw": 9,
+  "fh": 9,
+  "frames": 1,
+  "fps": 1,
+  "scale": 1.6,
+  "kind": "static"
+ },
+ "proj_fire": {
+  "image": "proj_fire.png",
+  "fw": 9,
+  "fh": 9,
+  "frames": 1,
+  "fps": 1,
+  "scale": 1.6,
+  "kind": "static"
+ },
+ "proj_volt": {
+  "image": "proj_volt.png",
+  "fw": 9,
+  "fh": 9,
+  "frames": 1,
+  "fps": 1,
+  "scale": 1.6,
+  "kind": "static"
+ },
+ "proj_bomb": {
+  "image": "proj_bomb.png",
+  "fw": 9,
+  "fh": 9,
+  "frames": 1,
+  "fps": 1,
+  "scale": 1.6,
+  "kind": "static"
+ },
+ "proj_venom": {
+  "image": "proj_venom.png",
+  "fw": 9,
+  "fh": 9,
+  "frames": 1,
+  "fps": 1,
+  "scale": 1.6,
+  "kind": "static"
+ }
+}

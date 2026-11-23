@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/path_view.gd" id="2_path"]
+[ext_resource type="Script" path="res://scripts/fx/ambient.gd" id="3_ambient"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -23,14 +24,25 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.07, 0.09, 0.13, 1)
 
+[node name="Ashes" type="CPUParticles2D" parent="."]
+script = ExtResource("3_ambient")
+
 [node name="PathView" type="Node2D" parent="."]
 script = ExtResource("2_path")
+
+[node name="FxGround" type="Node2D" parent="."]
 
 [node name="Towers" type="Node2D" parent="."]
 
 [node name="Enemies" type="Node2D" parent="."]
 
 [node name="Projectiles" type="Node2D" parent="."]
+
+[node name="FxAir" type="Node2D" parent="."]
+
+[node name="Embers" type="CPUParticles2D" parent="."]
+script = ExtResource("3_ambient")
+mode = "rise"
 
 [node name="TopBar" type="HBoxContainer" parent="."]
 layout_mode = 0

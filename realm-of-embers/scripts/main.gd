@@ -9,9 +9,11 @@ const RARITY_NAMES := {"common": "普通", "rare": "稀有", "epic": "史诗"}
 const RARITY_WEIGHTS := {"common": 60.0, "rare": 30.0, "epic": 10.0}
 
 @onready var path_view: Node2D = $PathView
+@onready var fx_ground: Node2D = $FxGround
 @onready var towers_node: Node2D = $Towers
 @onready var enemies_node: Node2D = $Enemies
 @onready var projectiles_node: Node2D = $Projectiles
+@onready var fx_air: Node2D = $FxAir
 @onready var wave_label: Label = $TopBar/WaveLabel
 @onready var gold_label: Label = $TopBar/GoldLabel
 @onready var lives_label: Label = $TopBar/LivesLabel
@@ -390,9 +392,12 @@ func _try_merge(a: Tower, b: Tower) -> bool:
 		src["tower"] = null
 		a.queue_free()
 	if b.level >= 3:
+		FxBank.play(fx_air, "fx_merge", b.position, {"scale": 0.8})
 		b.evolve()
+		FxBank.play(fx_air, "fx_evolve", b.position)
 	else:
 		b._refresh_visual()
+		FxBank.play(fx_air, "fx_merge", b.position)
 		log_msg("⬆️ 合成 %s → Lv%d" % [_tw_name(b), b.level])
 	sel_tower = b
 	_render()
@@ -580,10 +585,12 @@ func on_enemy_leaked(e: Enemy) -> void:
 		_render()
 
 
-## 城堡被打：飘伤害数字 + 红光 + 耐久标签闪红
+## 城堡被打：爆炸 + 震屏 + 飘伤害数字 + 红光
 func _castle_hit_fx(cost: int) -> void:
 	var c: Array = DataLoader.rules.get("castle", [1200, 600])
 	var cpos := Vector2(float(c[0]), float(c[1]))
+	FxBank.play(fx_air, "aoe_fire", cpos, {"scale": 0.45})
+	_shake()
 	path_view.flash(cpos + Vector2(-34, -24), cpos + Vector2(34, 24), Color(1.0, 0.3, 0.3, 0.9))
 	var l := Label.new()
 	l.text = "💥 -%d" % cost
@@ -595,6 +602,14 @@ func _castle_hit_fx(cost: int) -> void:
 	tw.tween_property(l, "position:y", l.position.y - 44.0, 0.8)
 	tw.parallel().tween_property(l, "modulate:a", 0.0, 0.8)
 	tw.tween_callback(l.queue_free)
+
+
+## 全屏轻震：城堡受击/失败时的打击感
+func _shake(strength := 5.0) -> void:
+	var tw := create_tween()
+	tw.tween_property(self, "position", Vector2(strength, -strength * 0.6), 0.05)
+	tw.tween_property(self, "position", Vector2(-strength, strength * 0.4), 0.05)
+	tw.tween_property(self, "position", Vector2.ZERO, 0.06)
 
 
 func on_enemy_died(e: Enemy) -> void:
@@ -625,6 +640,8 @@ func on_enemy_died(e: Enemy) -> void:
 func _victory() -> void:
 	state = "over"
 	_delete_save(active_slot)  # 通关 = 清当前档
+	var c: Array = DataLoader.rules.get("castle", [1200, 600])
+	FxBank.play(fx_air, "fx_evolve", Vector2(float(c[0]), float(c[1])), {"scale": 1.5})
 	end_label.text = "🎉 王国守住了！\n15 波全部击退，剩余耐久 %d" % lives
 	end_overlay.visible = true
 	_render()
@@ -632,6 +649,9 @@ func _victory() -> void:
 
 func _game_over(reason: String) -> void:
 	state = "over"
+	var c: Array = DataLoader.rules.get("castle", [1200, 600])
+	FxBank.play(fx_air, "rx_overload", Vector2(float(c[0]), float(c[1])), {"scale": 1.5})
+	_shake(8.0)
 	end_label.text = "💀 王国陷落……\n止步第 %d/%d 波" % [wave_idx, DataLoader.waves.size()]
 	end_overlay.visible = true
 	_render()

@@ -36,10 +36,17 @@ func _draw() -> void:
 			draw_arc(pos, 22.0, 0.0, TAU, 24, ring, 2.0)
 		if build_mode:
 			draw_string(font, pos + Vector2(-22, 7), "+", HORIZONTAL_ALIGNMENT_CENTER, 44, 18, Color(0.85, 0.95, 1.0, 0.9))
-	# 城堡
+	# 城堡（像素精灵，脚底对齐城堡锚点）
 	var c: Array = r.get("castle", [1200, 600])
 	var cpos := Vector2(float(c[0]), float(c[1]))
-	draw_string(font, cpos + Vector2(-44, 22), "🏰", HORIZONTAL_ALIGNMENT_CENTER, 88, 46, Color.WHITE)
+	var castle_tex := UnitsBank.frame_texture("castle")
+	if castle_tex != null:
+		var cs := 3.0
+		var cw := castle_tex.get_width() * cs
+		var ch2 := castle_tex.get_height() * cs
+		draw_texture_rect(castle_tex, Rect2(cpos.x - cw * 0.5, cpos.y - ch2 + 8.0, cw, ch2), false)
+	else:
+		draw_string(font, cpos + Vector2(-44, 22), "🏰", HORIZONTAL_ALIGNMENT_CENTER, 88, 46, Color.WHITE)
 	# 选中塔射程
 	if show_range and range_radius > 0.0:
 		draw_circle(range_center, range_radius, Color(1.0, 0.95, 0.6, 0.07))

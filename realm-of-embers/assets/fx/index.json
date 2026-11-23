@@ -1,0 +1,461 @@
+[
+ {
+  "name": "hit_arrow",
+  "id": "impacts/blunt-hit",
+  "image": "hit_arrow.png",
+  "atlas": "hit_arrow.json",
+  "fw": 128,
+  "fh": 88,
+  "frames": 28,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.6,
+  "scale": 1,
+  "pivot": [
+   64,
+   44
+  ]
+ },
+ {
+  "name": "hit_fire",
+  "id": "impacts/blunt-hit",
+  "image": "hit_fire.png",
+  "atlas": "hit_fire.json",
+  "fw": 128,
+  "fh": 88,
+  "frames": 28,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.6,
+  "scale": 1,
+  "pivot": [
+   64,
+   44
+  ]
+ },
+ {
+  "name": "hit_ice",
+  "id": "impacts/blunt-hit",
+  "image": "hit_ice.png",
+  "atlas": "hit_ice.json",
+  "fw": 128,
+  "fh": 88,
+  "frames": 28,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.6,
+  "scale": 1,
+  "pivot": [
+   64,
+   44
+  ]
+ },
+ {
+  "name": "hit_lightning",
+  "id": "impacts/blunt-hit",
+  "image": "hit_lightning.png",
+  "atlas": "hit_lightning.json",
+  "fw": 128,
+  "fh": 88,
+  "frames": 28,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.6,
+  "scale": 1,
+  "pivot": [
+   64,
+   44
+  ]
+ },
+ {
+  "name": "hit_poison",
+  "id": "impacts/blunt-hit",
+  "image": "hit_poison.png",
+  "atlas": "hit_poison.json",
+  "fw": 128,
+  "fh": 88,
+  "frames": 28,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.6,
+  "scale": 1,
+  "pivot": [
+   64,
+   44
+  ]
+ },
+ {
+  "name": "hit_crit",
+  "id": "impacts/blunt-hit",
+  "image": "hit_crit.png",
+  "atlas": "hit_crit.json",
+  "fw": 128,
+  "fh": 88,
+  "frames": 28,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.2,
+  "scale": 1.3,
+  "pivot": [
+   64,
+   44
+  ]
+ },
+ {
+  "name": "hit_flash",
+  "id": "impacts/hit-flash",
+  "image": "hit_flash.png",
+  "atlas": "hit_flash.json",
+  "fw": 80,
+  "fh": 64,
+  "frames": 16,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.4,
+  "scale": 1,
+  "pivot": [
+   40,
+   32
+  ]
+ },
+ {
+  "name": "aoe_bomb",
+  "id": "explosions/dirt-explosion",
+  "image": "aoe_bomb.png",
+  "atlas": "aoe_bomb.json",
+  "fw": 260,
+  "fh": 240,
+  "frames": 109,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.7,
+  "scale": 0.6,
+  "pivot": [
+   130,
+   180
+  ]
+ },
+ {
+  "name": "aoe_fire",
+  "id": "explosions/big-explosion",
+  "image": "aoe_fire.png",
+  "atlas": "aoe_fire.json",
+  "fw": 360,
+  "fh": 300,
+  "frames": 217,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.7,
+  "scale": 0.6,
+  "pivot": [
+   180,
+   225
+  ]
+ },
+ {
+  "name": "aoe_venom",
+  "id": "nature/acid-splash",
+  "image": "aoe_venom.png",
+  "atlas": "aoe_venom.json",
+  "fw": 184,
+  "fh": 116,
+  "frames": 85,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.6,
+  "scale": 0.6,
+  "pivot": [
+   92,
+   87
+  ]
+ },
+ {
+  "name": "death_coin",
+  "id": "spawn/coin-drop",
+  "image": "death_coin.png",
+  "atlas": "death_coin.json",
+  "fw": 160,
+  "fh": 88,
+  "frames": 91,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.4,
+  "scale": 1,
+  "pivot": [
+   80,
+   66
+  ]
+ },
+ {
+  "name": "death_poof",
+  "id": "spawn/poof",
+  "image": "death_poof.png",
+  "atlas": "death_poof.json",
+  "fw": 112,
+  "fh": 92,
+  "frames": 49,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.3,
+  "scale": 1,
+  "pivot": [
+   56,
+   46
+  ]
+ },
+ {
+  "name": "death_boss",
+  "id": "spawn/disintegrate",
+  "image": "death_boss.png",
+  "atlas": "death_boss.json",
+  "fw": 176,
+  "fh": 100,
+  "frames": 103,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.3,
+  "scale": 1.2,
+  "pivot": [
+   88,
+   50
+  ]
+ },
+ {
+  "name": "st_burn",
+  "id": "status/burning",
+  "image": "st_burn.png",
+  "atlas": "st_burn.json",
+  "fw": 72,
+  "fh": 80,
+  "frames": 36,
+  "fps": 30,
+  "loop": true,
+  "speed": 1,
+  "scale": 0.5,
+  "pivot": [
+   36,
+   40
+  ]
+ },
+ {
+  "name": "st_slow",
+  "id": "status/frozen",
+  "image": "st_slow.png",
+  "atlas": "st_slow.json",
+  "fw": 72,
+  "fh": 64,
+  "frames": 60,
+  "fps": 30,
+  "loop": true,
+  "speed": 1,
+  "scale": 0.45,
+  "pivot": [
+   36,
+   32
+  ]
+ },
+ {
+  "name": "st_poison",
+  "id": "nature/poison-cloud",
+  "image": "st_poison.png",
+  "atlas": "st_poison.json",
+  "fw": 256,
+  "fh": 100,
+  "frames": 120,
+  "fps": 30,
+  "loop": true,
+  "speed": 1,
+  "scale": 0.22,
+  "pivot": [
+   128,
+   75
+  ]
+ },
+ {
+  "name": "st_stun",
+  "id": "lightning/electrified",
+  "image": "st_stun.png",
+  "atlas": "st_stun.json",
+  "fw": 108,
+  "fh": 92,
+  "frames": 60,
+  "fps": 30,
+  "loop": true,
+  "speed": 1,
+  "scale": 0.45,
+  "pivot": [
+   54,
+   46
+  ]
+ },
+ {
+  "name": "rx_steam",
+  "id": "water/geyser",
+  "image": "rx_steam.png",
+  "atlas": "rx_steam.json",
+  "fw": 184,
+  "fh": 168,
+  "frames": 151,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.9,
+  "scale": 0.45,
+  "pivot": [
+   92,
+   126
+  ]
+ },
+ {
+  "name": "rx_superconductor",
+  "id": "ice/frost-nova",
+  "image": "rx_superconductor.png",
+  "atlas": "rx_superconductor.json",
+  "fw": 288,
+  "fh": 192,
+  "frames": 103,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.5,
+  "scale": 0.42,
+  "pivot": [
+   144,
+   96
+  ]
+ },
+ {
+  "name": "rx_overload",
+  "id": "scifi/emp-blast",
+  "image": "rx_overload.png",
+  "atlas": "rx_overload.json",
+  "fw": 152,
+  "fh": 116,
+  "frames": 97,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.5,
+  "scale": 1,
+  "pivot": [
+   76,
+   58
+  ]
+ },
+ {
+  "name": "fx_heal",
+  "id": "holy/heal-aoe",
+  "image": "fx_heal.png",
+  "atlas": "fx_heal.json",
+  "fw": 256,
+  "fh": 136,
+  "frames": 88,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.4,
+  "scale": 0.55,
+  "pivot": [
+   128,
+   102
+  ]
+ },
+ {
+  "name": "fx_summon",
+  "id": "spawn/summon-rise",
+  "image": "fx_summon.png",
+  "atlas": "fx_summon.json",
+  "fw": 176,
+  "fh": 116,
+  "frames": 139,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.7,
+  "scale": 0.45,
+  "pivot": [
+   88,
+   87
+  ]
+ },
+ {
+  "name": "fx_merge",
+  "id": "arcane/magic-circle-cast",
+  "image": "fx_merge.png",
+  "atlas": "fx_merge.json",
+  "fw": 200,
+  "fh": 220,
+  "frames": 118,
+  "fps": 30,
+  "loop": false,
+  "speed": 2,
+  "scale": 0.42,
+  "pivot": [
+   100,
+   165
+  ]
+ },
+ {
+  "name": "fx_evolve",
+  "id": "ui/level-up",
+  "image": "fx_evolve.png",
+  "atlas": "fx_evolve.json",
+  "fw": 176,
+  "fh": 138,
+  "frames": 97,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.6,
+  "scale": 0.6,
+  "pivot": [
+   88,
+   104
+  ]
+ },
+ {
+  "name": "fx_rage",
+  "id": "status/rage",
+  "image": "fx_rage.png",
+  "atlas": "fx_rage.json",
+  "fw": 80,
+  "fh": 80,
+  "frames": 36,
+  "fps": 30,
+  "loop": true,
+  "speed": 1,
+  "scale": 0.45,
+  "pivot": [
+   40,
+   40
+  ]
+ },
+ {
+  "name": "fx_disable",
+  "id": "scifi/glitch",
+  "image": "fx_disable.png",
+  "atlas": "fx_disable.json",
+  "fw": 88,
+  "fh": 64,
+  "frames": 72,
+  "fps": 30,
+  "loop": true,
+  "speed": 1,
+  "scale": 0.4,
+  "pivot": [
+   44,
+   32
+  ]
+ },
+ {
+  "name": "fx_screen",
+  "id": "transitions/pixel-dissolve",
+  "image": "fx_screen.png",
+  "atlas": "fx_screen.json",
+  "fw": 320,
+  "fh": 180,
+  "frames": 67,
+  "fps": 30,
+  "loop": false,
+  "speed": 1.6,
+  "scale": 2,
+  "pivot": [
+   160,
+   90
+  ]
+ }
+]
