@@ -7,6 +7,9 @@ extends Node
 static var _index: Dictionary = {}
 static var _cache: Dictionary = {}   # name -> SpriteFrames
 static var _loaded := false
+static var reduced_motion := false   # 减弱动效：关震屏/转场/顿帧（无障碍开关，main 接线）
+static var _last_play_ms: Dictionary = {}  # 反馈限流：fx_name -> msec
+const THROTTLE_MS := 60   # 同名一次性特效最小间隔（防视觉"习惯化"，循环特效不受限）
 
 
 static func ensure() -> void:
@@ -56,13 +59,20 @@ static func frames(fx_name: String) -> SpriteFrames:
 	return sf
 
 
-## 在 layer 上于 pos 播放特效；opts: flip/scale/speed/modulate/life(循环特效的存活秒数)/z
+## 在 layer 上于 pos 播放特效；opts: flip/scale/speed/modulate/life(循环特效的存活秒数)/z/priority(绕过限流)
 static func play(layer: Node, fx_name: String, pos: Vector2, opts: Dictionary = {}) -> AnimatedSprite2D:
 	if layer == null:
 		return null
 	var inf := info(fx_name)
 	if inf.is_empty():
 		return null
+	# 同名一次性反馈限流：命中火花这类高频特效 60ms 内只放一次，防视觉噪声
+	if not bool(inf.get("loop", false)) and not bool(opts.get("priority", false)):
+		var now := Time.get_ticks_msec()
+		var last := int(_last_play_ms.get(fx_name, -100000))
+		if now - last < THROTTLE_MS:
+			return null
+		_last_play_ms[fx_name] = now
 	var s := AnimatedSprite2D.new()
 	s.sprite_frames = frames(fx_name)
 	if s.sprite_frames == null:

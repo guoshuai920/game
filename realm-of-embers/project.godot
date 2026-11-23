@@ -18,6 +18,7 @@ theme/custom_font="res://assets/fonts/main_font.tres"
 [autoload]
 
 DataLoader="*res://scripts/data_loader.gd"
+Sfx="*res://scripts/fx/sfx_bank.gd"
 
 [display]
 

@@ -142,10 +142,10 @@ func _process(delta: float) -> void:
 	_tick_status(delta)
 	if dead:
 		return
-	_attach_status(burn_timer > 0.0, "st_burn", "_fx_burn", -16.0)
-	_attach_status(slow_timer > 0.0, "st_slow", "_fx_slow", -16.0)
+	_attach_status(burn_timer > 0.0, "st_burn", "_fx_burn", 0.0)
+	_attach_status(slow_timer > 0.0, "st_slow", "_fx_slow", 0.0)
 	_attach_status(poison_timer > 0.0, "st_poison", "_fx_poison", 2.0)
-	_attach_status(stun_timer > 0.0, "st_stun", "_fx_stun", -16.0)
+	_attach_status(stun_timer > 0.0, "st_stun", "_fx_stun", 0.0)
 	if stun_timer > 0.0:
 		stun_timer -= delta
 		modulate = Color(1.0, 0.95, 0.4)
@@ -265,14 +265,17 @@ func _trigger_reaction(r: Dictionary) -> void:
 			var dmg := float(r.get("dmg", 20.0)) * (1.0 + float(game.get_mod("reaction", 0.0)))
 			game.aoe_damage(position, float(r.get("radius", 70.0)), dmg)
 			FxBank.play(game.fx_ground, "rx_steam", position, {"scale": 1.1})
+			Sfx.play("rx_steam", -2.0)
 			game.log_msg("⚗️ 蒸汽爆发！")
 		"superconductor":
 			_super_timer = maxf(_super_timer, float(r.get("dur", 5.0)))
 			FxBank.play(game.fx_air, "rx_superconductor", position)
+			Sfx.play("rx_super", -2.0)
 			game.log_msg("🧲 超导！护甲减半")
 		"overload":
 			stun_timer = maxf(stun_timer, float(r.get("stun", 0.5)))
 			FxBank.play(game.fx_air, "rx_overload", position)
+			Sfx.play("rx_overload", -2.0)
 			game.log_msg("💥 感电过载！眩晕")
 
 
@@ -309,7 +312,8 @@ func _specials(delta: float) -> void:
 		if _summon_cd <= 0.0:
 			var summon := def.get("summon", {}) as Dictionary
 			_summon_cd = float(summon.get("interval", 4.0))
-			FxBank.play(game.fx_ground, "fx_summon", position, {"scale": 0.9})
+			# 召唤用小型法阵（fx_summon 的魔物登場演出保留给 Boss 出场）
+			FxBank.play(game.fx_ground, "fx_merge", position, {"scale": 0.55, "speed": 1.6})
 			game.spawn_enemy_at(String(summon.get("into", "skeleton")), position, spawn_mul)
 			game.log_msg("💀 %s 召唤了骷髅！" % display_name)
 	# 瘫痪附近的塔
@@ -327,6 +331,7 @@ func _specials(delta: float) -> void:
 					best = t
 			if best != null:
 				best.disabled_time = float(dd.get("dur", 3.0))
+				Sfx.play("tower_disabled", -2.0)
 				game.log_msg("🦂 %s 瘫痪了一座塔！" % display_name)
 
 
@@ -385,6 +390,10 @@ func _death_fx() -> void:
 	var fx := "death_coin"
 	if bool(DataLoader.enemy(id).get("boss", false)):
 		fx = "death_boss"
+		Sfx.play("boss_die", -1.0)
 	elif id == "skeleton" or id == "slimelet":
 		fx = "death_poof"
+		Sfx.play("enemy_die", -6.0)
+	else:
+		Sfx.play("enemy_die", -6.0)
 	FxBank.play(game.fx_air, fx, position)

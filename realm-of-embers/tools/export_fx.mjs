@@ -15,7 +15,7 @@ import { mkdirSync } from "node:fs";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");
 const PX = process.env.PIXELFX_ROOT ?? join(ROOT, "..", "..", "reference", "pixelfx");
-const { loadEffect, renderFrames, spriteSheet, save, contactSheet } = await import(
+const { loadEffect, renderFrames, spriteSheet, save, contactSheet, upscale, canvas } = await import(
 	pathToFileURL(join(PX, "tools", "lib", "fxlib.mjs")).href
 );
 const { PAL } = await import(pathToFileURL(join(PX, "src", "core", "color.js")).href);
@@ -32,7 +32,6 @@ const LIST = [
 	{ name: "hit_lightning", id: "impacts/blunt-hit", options: { palette: PAL.volt }, speed: 1.6, anchor: "center" },
 	{ name: "hit_poison", id: "impacts/blunt-hit", options: { palette: PAL.poison }, speed: 1.6, anchor: "center" },
 	{ name: "hit_crit", id: "impacts/blunt-hit", options: { palette: PAL.gold }, speed: 1.2, scale: 1.3, anchor: "center" },
-	{ name: "hit_flash", id: "impacts/hit-flash", speed: 1.4, anchor: "center" },
 	// —— AOE ——
 	{ name: "aoe_bomb", id: "explosions/dirt-explosion", speed: 1.7, scale: 0.6, anchor: "ground" },
 	{ name: "aoe_fire", id: "explosions/big-explosion", speed: 1.7, scale: 0.6, anchor: "ground" },
@@ -40,12 +39,12 @@ const LIST = [
 	// —— 死亡 ——
 	{ name: "death_coin", id: "spawn/coin-drop", speed: 1.4, anchor: "ground" },
 	{ name: "death_poof", id: "spawn/poof", speed: 1.3, anchor: "center" },
-	{ name: "death_boss", id: "spawn/disintegrate", speed: 1.3, scale: 1.2, anchor: "center" },
-	// —— 状态（循环，挂在单位身上）——
-	{ name: "st_burn", id: "status/burning", scale: 0.5, anchor: "center" },
-	{ name: "st_slow", id: "status/frozen", scale: 0.45, anchor: "center" },
-	{ name: "st_poison", id: "nature/poison-cloud", scale: 0.22, anchor: "ground" },
-	{ name: "st_stun", id: "lightning/electrified", scale: 0.45, anchor: "center" },
+	{ name: "death_boss", id: "death_boss", custom: true, scale: 0.75, anchor: "ground" },
+	// —— 状态（循环，挂身；全部定制无主体版）——
+	{ name: "st_burn", id: "st_burn", custom: true, scale: 0.9, anchor: "ground" },
+	{ name: "st_slow", id: "st_slow", custom: true, scale: 0.9, anchor: "ground" },
+	{ name: "st_poison", id: "nature/poison-cloud", scale: 0.18, anchor: "ground" },
+	{ name: "st_stun", id: "st_stun", custom: true, scale: 0.9, anchor: "ground" },
 	// —— 元素反应（专属定制，tools/custom_fx/ 手写）——
 	{ name: "rx_steam", id: "rx_steam", custom: true, scale: 0.55, anchor: "ground" },
 	{ name: "rx_superconductor", id: "rx_superconductor", custom: true, scale: 0.55, anchor: "center" },
@@ -54,10 +53,10 @@ const LIST = [
 	{ name: "fx_heal", id: "holy/heal-aoe", speed: 1.4, scale: 0.55, anchor: "ground" },
 	{ name: "fx_summon", id: "spawn/summon-rise", speed: 1.7, scale: 0.45, anchor: "ground" },
 	{ name: "fx_merge", id: "arcane/magic-circle-cast", speed: 2.0, scale: 0.42, anchor: "ground" },
-	{ name: "fx_evolve", id: "ui/level-up", speed: 1.6, scale: 0.6, anchor: "ground" },
-	{ name: "fx_rage", id: "status/rage", scale: 0.45, anchor: "center" },
-	{ name: "fx_disable", id: "scifi/glitch", scale: 0.4, anchor: "center" },
-	{ name: "fx_screen", id: "transitions/pixel-dissolve", speed: 1.6, scale: 2.0, anchor: "center" },
+	{ name: "fx_evolve", id: "fx_evolve", custom: true, scale: 0.7, anchor: "ground" },
+	{ name: "fx_rage", id: "fx_rage", custom: true, scale: 0.9, anchor: "ground" },
+	{ name: "fx_disable", id: "fx_disable", custom: true, scale: 0.9, anchor: "ground" },
+	{ name: "fx_screen", id: "transitions/pixel-dissolve", speed: 1.6, scale: 4.0, anchor: "center" },
 ];
 
 mkdirSync(OUT, { recursive: true });
@@ -85,6 +84,18 @@ for (const e of LIST) {
 		if (REVIEW_MODE) {
 			const rc = renderFrames(fx, { bg: "dark", options: e.options });
 			save(join(REVIEW, `${e.name}.png`), contactSheet(fx, rc, { max: 12, zoom: 3 }));
+			// 真实精灵预览：用 clear 缓冲（无背景无演员）拼帧——和游戏里看到的完全一致
+			const k = 3, pad = 6, n = Math.min(r.n, 10);
+			const step = Math.max(1, Math.floor(r.frames.length / n));
+			const pw = r.w * k, ph = r.h * k;
+			const img = canvas((pw + pad) * Math.min(n, 5) + pad, (ph + pad + 14) * Math.ceil(n / 5) + pad);
+			for (let i = 0; i < n; i++) {
+				const fr = r.frames[Math.min(r.frames.length - 1, i * step)];
+				const cx = pad + (i % 5) * (pw + pad), cy = pad + Math.floor(i / 5) * (ph + pad + 14);
+				img.paste(upscale(fr.clear, r.w, r.h, k), pw, ph, cx, cy);
+				img.text(`${(fr.t).toFixed(2)}s`, cx, cy + ph + 2, 2, [150, 150, 160]);
+			}
+			save(join(REVIEW, `${e.name}.sprite.png`), img.png());
 		}
 		process.stdout.write(`✓ ${e.name} (${e.id})\n`);
 	} catch (err) {

@@ -21,8 +21,10 @@ const RARITY_WEIGHTS := {"common": 60.0, "rare": 30.0, "epic": 10.0}
 @onready var log_label: Label = $LogLabel
 @onready var shop_bar: HBoxContainer = $ShopBar
 @onready var sel_panel: HBoxContainer = $SelPanel
+@onready var tw_info: Label = $SelPanel/TwInfo
 @onready var sell_button: Button = $SelPanel/SellButton
 @onready var mode_button: Button = $SelPanel/ModeButton
+@onready var motion_button: Button = $TopBar/MotionButton
 @onready var next_wave_button: Button = $NextWaveButton
 @onready var restart_run_button: Button = $TopBar/RestartRunButton
 @onready var quit_button: Button = $TopBar/QuitButton
@@ -68,6 +70,8 @@ func _ready() -> void:
 		slots.append({"pos": Vector2(float(s[0]), float(s[1])), "high": high, "tower": null})
 	next_wave_button.pressed.connect(_on_next_wave)
 	next_wave_button.text = "开始"
+	motion_button.pressed.connect(_on_toggle_motion)
+	motion_button.text = "动效:全开"
 	new_game_button.pressed.connect(_on_new_game)
 	restart_run_button.pressed.connect(func() -> void: get_tree().reload_current_scene())
 	quit_button.pressed.connect(func() -> void: get_tree().quit())
@@ -79,7 +83,8 @@ func _ready() -> void:
 	_migrate_legacy_save()
 	_refresh_preview()
 	_render()
-	log_msg("建立防线！点下方选塔，再点发光格位放置；拖同类同星合成升星")
+	log_msg("建立防线！点下方选塔，再点发光格位放置；拖同类同星合成升星（M 键静音）")
+	Sfx.ambient()
 	if not test_mode and _any_slot_save():
 		_show_save_panel()
 	if autotest:
@@ -127,6 +132,13 @@ func get_mod(key: String, dflt: float) -> float:
 	return float(mods.get(key, dflt))
 
 
+## 减弱动效开关：关震屏/开波转场/顿帧（保留特效与音效本身）
+func _on_toggle_motion() -> void:
+	FxBank.reduced_motion = not FxBank.reduced_motion
+	motion_button.text = "动效:减弱" if FxBank.reduced_motion else "动效:全开"
+	log_msg("动效已%s（震屏/转场/顿帧）" % ("减弱" if FxBank.reduced_motion else "全开"))
+
+
 func log_msg(text: String) -> void:
 	log_label.text = text
 	print(text)
@@ -163,6 +175,7 @@ func spawn_enemy_at(id: String, pos: Vector2, mul: float) -> void:
 func _boss_intro(boss_name: String, pos: Vector2) -> void:
 	FxBank.play(fx_air, "fx_summon", pos, {"scale": 2.4})
 	FxBank.play(fx_air, "rx_overload", pos, {"scale": 1.6})
+	Sfx.play("boss_intro", -1.0)
 	_shake(7.0)
 	var dim := ColorRect.new()
 	dim.color = Color(0.5, 0.05, 0.05, 0.0)
@@ -236,6 +249,7 @@ func _render() -> void:
 		b.disabled = modal or gold < cost or state == "over"
 	var show_sel := sel_tower != null and is_instance_valid(sel_tower) and not modal
 	sel_panel.visible = show_sel
+	tw_info.visible = show_sel
 	next_wave_button.disabled = modal or state != "planning"
 	restart_run_button.disabled = modal
 	quit_button.disabled = modal
@@ -281,6 +295,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		shop_sel = ""
 		sel_tower = null
 		_render()
+		return
+	if event is InputEventKey and event.is_pressed() and (event as InputEventKey).keycode == KEY_M:
+		var m := Sfx.toggle_mute()
+		log_msg("声音已%s" % ("关闭" if m else "开启"))
 		return
 	if event is InputEventMouseButton and event.pressed:
 		var mb := event as InputEventMouseButton
@@ -347,10 +365,13 @@ func _handle_click(pos: Vector2) -> void:
 
 
 func _show_selected_info(t: Tower) -> void:
-	log_msg("%s Lv%d · 伤害%d 攻速%.1f 射程%d · 拖拽：同类同星→合成 / 空位→移动 / 有塔→交换%s" % [
+	# 属性进选中面板（信息层级：决策数据在面板，日志只放事件流）
+	tw_info.visible = true
+	tw_info.text = "%s Lv%d★\n伤%d 速%.1f 程%d%s" % [
 		_tw_name(t), t.level, int(t.stat("dmg")), t.stat("rate"), int(t.stat("range")),
-		"（高台射程+20%）" if t.is_high else "",
-	])
+		"\n高台+程" if t.is_high else "",
+	]
+	log_msg("拖拽：同类同星→合成 / 空位→移动 / 有塔→交换")
 
 
 func _tw_name(t: Tower) -> String:
@@ -388,6 +409,7 @@ func _slot_at(pos: Vector2) -> int:
 
 
 func _on_shop_click(fid: String) -> void:
+	Sfx.play("ui_click", -4.0)
 	if shop_sel == fid:
 		shop_sel = ""  # 再点一次同一个塔按钮 = 取消选择（触屏友好）
 	else:
@@ -419,6 +441,9 @@ func _build_tower(fid: String, slot_i: int) -> void:
 	t.position = slot.get("pos") as Vector2
 	t.slot_index = slot_i
 	slot["tower"] = t
+	FxBank.play(fx_ground, "fx_merge", t.position, {"scale": 0.6, "speed": 2.0})
+	FxBank.play(fx_air, "death_poof", t.position, {"scale": 0.8})
+	Sfx.play("build", -2.0)
 	log_msg("建造 %s（-%d金）" % [_tw_name(t), cost])
 	_render()
 
@@ -441,13 +466,36 @@ func _on_sell() -> void:
 	if sel_tower == null or not is_instance_valid(sel_tower):
 		return
 	var v := _sell_value(sel_tower)
+	var at: Vector2 = sel_tower.position
 	gold += v
 	var slot := slots[sel_tower.slot_index] as Dictionary
 	slot["tower"] = null
 	sel_tower.queue_free()
 	sel_tower = null
+	FxBank.play(fx_air, "death_poof", at, {"scale": 0.7})
+	Sfx.play("sell", -3.0)
+	_gold_float(at, v)
 	log_msg("卖出塔 +%d金" % v)
 	_render()
+
+
+## 金币飘字（卖出/奖励通用）
+func _gold_float(pos: Vector2, amount: int) -> void:
+	var l := Label.new()
+	l.text = "+%d 金" % amount
+	l.add_theme_font_size_override("font_size", 24)
+	l.add_theme_color_override("font_color", Color(1.0, 0.88, 0.4))
+	l.add_theme_color_override("font_outline_color", Color(0.2, 0.12, 0.0, 0.9))
+	l.add_theme_constant_override("outline_size", 6)
+	l.position = pos + Vector2(-30, -60)
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.z_index = 20
+	add_child(l)
+	var tw := create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(l, "position:y", l.position.y - 36.0, 0.7)
+	tw.tween_property(l, "modulate:a", 0.0, 0.7).set_ease(Tween.EASE_IN)
+	tw.chain().tween_callback(l.queue_free)
 
 
 func _on_mode() -> void:
@@ -475,9 +523,11 @@ func _try_merge(a: Tower, b: Tower) -> bool:
 		FxBank.play(fx_air, "fx_merge", b.position, {"scale": 0.8})
 		b.evolve()
 		FxBank.play(fx_air, "fx_evolve", b.position)
+		Sfx.play("evolve", -1.0)
 	else:
 		b._refresh_visual()
 		FxBank.play(fx_air, "fx_merge", b.position)
+		Sfx.play("merge", -3.0)
 		log_msg("⬆️ 合成 %s → Lv%d" % [_tw_name(b), b.level])
 	sel_tower = b
 	_render()
@@ -494,6 +544,10 @@ func _on_next_wave() -> void:
 	spawn_queue = _build_queue(wave_idx)
 	wave_clock = 0.0
 	_boss_shown = {}
+	# 开波全屏转场：像素溶解扫过战场（减弱动效时跳过）
+	if not FxBank.reduced_motion:
+		FxBank.play(fx_air, "fx_screen", Vector2(640, 360), {"z": 5, "priority": true})
+	Sfx.play("wave_start", -2.0)
 	log_msg("⚔️ 第 %d/%d 波来袭！" % [wave_idx, DataLoader.waves.size()])
 	_render()
 
@@ -587,6 +641,7 @@ func _end_wave() -> void:
 	var cap := float(DataLoader.rules.get("interestCap", 8)) + get_mod("interest_cap", 0.0)
 	var interest := int(minf(float(gold) * rate, cap))
 	gold += bonus + interest
+	Sfx.play("wave_clear", -3.0)
 	log_msg("✅ 第 %d 波守住！奖励 %d 金 + 利息 %d 金" % [wave_idx, bonus, interest])
 	_save_progress()
 	if autotest:
@@ -671,6 +726,7 @@ func _castle_hit_fx(cost: int) -> void:
 	var c: Array = DataLoader.rules.get("castle", [1200, 600])
 	var cpos := Vector2(float(c[0]), float(c[1]))
 	FxBank.play(fx_air, "aoe_fire", cpos, {"scale": 0.45})
+	Sfx.play("castle_hit", 0.0)
 	_shake()
 	path_view.flash(cpos + Vector2(-34, -24), cpos + Vector2(34, 24), Color(1.0, 0.3, 0.3, 0.9))
 	var l := Label.new()
@@ -687,15 +743,35 @@ func _castle_hit_fx(cost: int) -> void:
 
 ## 全屏轻震：城堡受击/失败时的打击感
 func _shake(strength := 5.0) -> void:
+	if FxBank.reduced_motion:
+		return
 	var tw := create_tween()
 	tw.tween_property(self, "position", Vector2(strength, -strength * 0.6), 0.05)
 	tw.tween_property(self, "position", Vector2(-strength, strength * 0.4), 0.05)
 	tw.tween_property(self, "position", Vector2.ZERO, 0.06)
 
 
+## 顿帧（hit-stop）：暴击/Boss 命中的重量感。带 0.25s 全局冷却防叠；
+## 自动测试（time_scale 10）与减弱动效模式下跳过。
+var _stop_until_ms := 0
+
+func request_hit_stop(strong: bool) -> void:
+	if FxBank.reduced_motion:
+		return
+	var now := Time.get_ticks_msec()  # 真实时钟，不受 time_scale 影响
+	if now < _stop_until_ms:
+		return
+	_stop_until_ms = now + 250
+	var prev := Engine.time_scale
+	Engine.time_scale = 0.08 if strong else 0.2
+	var t := get_tree().create_timer(0.06 if strong else 0.04, true, false, true)
+	t.timeout.connect(func() -> void: Engine.time_scale = prev)
+
+
 func on_enemy_died(e: Enemy) -> void:
 	var gain := int(round(float(e.bounty) * (1.0 + get_mod("bounty", 0.0))))
 	gold += gain
+	Sfx.play("coin", -6.0)
 	log_msg("☠️ 击杀 %s +%d金" % [e.display_name, gain])
 	var def := DataLoader.enemy(e.id)
 	var split := def.get("split", {}) as Dictionary
@@ -723,6 +799,7 @@ func _victory() -> void:
 	_delete_save(active_slot)  # 通关 = 清当前档
 	var c: Array = DataLoader.rules.get("castle", [1200, 600])
 	FxBank.play(fx_air, "fx_evolve", Vector2(float(c[0]), float(c[1])), {"scale": 1.5})
+	Sfx.play("victory", 0.0)
 	end_label.text = "🎉 王国守住了！\n15 波全部击退，剩余耐久 %d" % lives
 	end_overlay.visible = true
 	_render()
@@ -732,6 +809,7 @@ func _game_over(reason: String) -> void:
 	state = "over"
 	var c: Array = DataLoader.rules.get("castle", [1200, 600])
 	FxBank.play(fx_air, "rx_overload", Vector2(float(c[0]), float(c[1])), {"scale": 1.5})
+	Sfx.play("defeat", 0.0)
 	_shake(8.0)
 	end_label.text = "💀 王国陷落……\n止步第 %d/%d 波" % [wave_idx, DataLoader.waves.size()]
 	end_overlay.visible = true

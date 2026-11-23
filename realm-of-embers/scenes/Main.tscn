@@ -86,6 +86,12 @@ custom_minimum_size = Vector2(64, 30)
 theme_override_font_sizes/font_size = 15
 text = "退出"
 
+[node name="MotionButton" type="Button" parent="TopBar"]
+layout_mode = 2
+custom_minimum_size = Vector2(88, 30)
+theme_override_font_sizes/font_size = 15
+text = "动效:全开"
+
 [node name="SaveOverlay" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -184,7 +190,7 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -470
+offset_left = -600
 offset_top = -78
 offset_right = -230
 offset_bottom = -16
@@ -192,6 +198,15 @@ grow_horizontal = 0
 grow_vertical = 0
 theme_override_constants/separation = 6
 visible = false
+
+[node name="TwInfo" type="Label" parent="SelPanel"]
+layout_mode = 2
+custom_minimum_size = Vector2(130, 56)
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.95, 0.93, 0.85, 1)
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="SellButton" type="Button" parent="SelPanel"]
 layout_mode = 2

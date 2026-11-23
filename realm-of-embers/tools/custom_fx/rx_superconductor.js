@@ -106,7 +106,7 @@ export function create(o) {
         q.y += q.vy * dt;
       }
     },
-    draw(p) {
+    draw(p, t) {
       if (t < BREAK) {
         for (const pr of prisms) {
           const k = ease.outCubic(clamp((t - pr.t0) / RISE));

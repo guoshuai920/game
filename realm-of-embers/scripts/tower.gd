@@ -100,7 +100,7 @@ func _process(delta: float) -> void:
 		disabled_time -= delta
 		modulate = Color(0.45, 0.45, 0.5)
 		if _fx_dis == null:
-			_fx_dis = FxBank.play(self, "fx_disable", Vector2(0, -18))
+			_fx_dis = FxBank.play(self, "fx_disable", Vector2.ZERO)
 		return
 	if _fx_dis != null:
 		_fx_dis.queue_free()
@@ -156,6 +156,19 @@ func _effect_dict(key: String) -> Dictionary:
 
 
 func _fire_at(target: Variant) -> void:
+	match family_id:
+		"arrow":
+			Sfx.play("fire_arrow", -6.0)
+		"frost":
+			Sfx.play("fire_frost", -6.0)
+		"thunder":
+			Sfx.play("fire_thunder", -6.0)
+		"flame":
+			Sfx.play("fire_flame", -6.0)
+		"bomb":
+			Sfx.play("fire_bomb", -5.0)
+		"venom":
+			Sfx.play("fire_venom", -6.0)
 	var b := branch_def_dict()
 	var dmg := stat("dmg")
 	var pierce := 0.0

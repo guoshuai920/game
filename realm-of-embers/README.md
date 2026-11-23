@@ -91,3 +91,4 @@ scripts/ main.gd（主循环/经济/UI）· tower.gd · enemy.gd · projectile.g
 - **单位**：`tools/bake_units.mjs` 把手绘像素网格（14 敌人 / 6 塔 / 城堡 / 7 弹道）烘成精灵图，双足自动生成 4 帧走路循环；改网格 → 重跑即可。
 - **运行时**：`scripts/fx/fx_bank.gd`（SpriteFrames 惰性构建 + 按锚点播放）、`scripts/fx/units_bank.gd`（单位锚定精灵）、`scripts/fx/ambient.gd`（余烬/火星氛围粒子）。
 - 目检循环：`--review` / bake 自带 `review/units.png` 暗底总览（该目录不入库，可随时重生成）。
+- **声音**：`tools/gen_sfx.mjs` 纯代码合成 28 个复古音效（方波/锯齿滑音+噪声爆+ADSR）+ 8 秒无缝环境低鸣，WAV 输出到 `assets/sfx/`；`scripts/fx/sfx_bank.gd`（autoload `Sfx`）8 路播放池、随机微变调、M 键静音。改音色 → `node tools/gen_sfx.mjs` 重新生成。

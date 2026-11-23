@@ -1,0 +1,114 @@
+{
+ "ui_click": {
+  "file": "ui_click.wav",
+  "dur": 0.05
+ },
+ "build": {
+  "file": "build.wav",
+  "dur": 0.16
+ },
+ "sell": {
+  "file": "sell.wav",
+  "dur": 0.09
+ },
+ "merge": {
+  "file": "merge.wav",
+  "dur": 0.2
+ },
+ "evolve": {
+  "file": "evolve.wav",
+  "dur": 0.3
+ },
+ "wave_start": {
+  "file": "wave_start.wav",
+  "dur": 0.5
+ },
+ "wave_clear": {
+  "file": "wave_clear.wav",
+  "dur": 0.18
+ },
+ "victory": {
+  "file": "victory.wav",
+  "dur": 0.7
+ },
+ "defeat": {
+  "file": "defeat.wav",
+  "dur": 0.6
+ },
+ "fire_arrow": {
+  "file": "fire_arrow.wav",
+  "dur": 0.08
+ },
+ "fire_frost": {
+  "file": "fire_frost.wav",
+  "dur": 0.12
+ },
+ "fire_thunder": {
+  "file": "fire_thunder.wav",
+  "dur": 0.1
+ },
+ "fire_flame": {
+  "file": "fire_flame.wav",
+  "dur": 0.18
+ },
+ "fire_bomb": {
+  "file": "fire_bomb.wav",
+  "dur": 0.2
+ },
+ "fire_venom": {
+  "file": "fire_venom.wav",
+  "dur": 0.14
+ },
+ "hit": {
+  "file": "hit.wav",
+  "dur": 0.07
+ },
+ "hit_crit": {
+  "file": "hit_crit.wav",
+  "dur": 0.14
+ },
+ "explode": {
+  "file": "explode.wav",
+  "dur": 0.5
+ },
+ "enemy_die": {
+  "file": "enemy_die.wav",
+  "dur": 0.16
+ },
+ "coin": {
+  "file": "coin.wav",
+  "dur": 0.1
+ },
+ "boss_die": {
+  "file": "boss_die.wav",
+  "dur": 0.8
+ },
+ "rx_steam": {
+  "file": "rx_steam.wav",
+  "dur": 0.45
+ },
+ "rx_super": {
+  "file": "rx_super.wav",
+  "dur": 0.3
+ },
+ "rx_overload": {
+  "file": "rx_overload.wav",
+  "dur": 0.35
+ },
+ "castle_hit": {
+  "file": "castle_hit.wav",
+  "dur": 0.4
+ },
+ "tower_disabled": {
+  "file": "tower_disabled.wav",
+  "dur": 0.35
+ },
+ "boss_intro": {
+  "file": "boss_intro.wav",
+  "dur": 1.1
+ },
+ "ambient": {
+  "file": "ambient.wav",
+  "dur": 8
+ }
+}

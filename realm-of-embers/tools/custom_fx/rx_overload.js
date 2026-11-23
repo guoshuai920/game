@@ -74,7 +74,7 @@ export function create(o) {
         star.rot += dt * 7.0 * (1 - clamp((t - 0.9) / 0.4) * 0.6);
       }
     },
-    draw(p) {
+    draw(p, t) {
       // 白热爆闪
       if (t < FLASH) {
         const k = 1 - t / FLASH;

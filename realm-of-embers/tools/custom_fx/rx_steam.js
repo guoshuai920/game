@@ -88,7 +88,7 @@ export function create(o) {
         q.y += q.vy * dt;
       }
     },
-    draw(p) {
+    draw(p, t) {
       // 地面涟漪（先画，垫底）
       for (const g of rings) {
         if (t < g.t0 || g.r <= 1) continue;

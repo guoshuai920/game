@@ -64,6 +64,8 @@ func _hit() -> void:
 	var elem := String(payload.get("element", "none"))
 	var pierce := float(payload.get("pierce", 0.0))
 	if payload.has("aoe"):
+		Sfx.play("explode", -4.0)
+		game._shake(2.5)
 		var radius := float(payload["aoe"])
 		for e in game.alive_enemies():
 			var en := e as Enemy
@@ -76,7 +78,13 @@ func _hit() -> void:
 		if target != null and not target.dead:
 			target.take_damage(dmg, elem, pierce)
 			_apply_effects(target)
+			# 顿帧：暴击强、Boss 命中弱（request_hit_stop 内部自带冷却与降级）
+			if bool(payload.get("crit", false)):
+				game.request_hit_stop(true)
+			elif bool(DataLoader.enemy(target.id).get("boss", false)):
+				game.request_hit_stop(false)
 	if bool(payload.get("crit", false)):
+		Sfx.play("hit_crit", -3.0)
 		game._crit_float(position, int(dmg))
 	_hit_fx(elem)
 	queue_free()
@@ -97,6 +105,7 @@ func _hit_fx(elem: String) -> void:
 	if bool(payload.get("crit", false)):
 		FxBank.play(game.fx_air, "hit_crit", position)
 		return
+	Sfx.play("hit", -8.0)
 	var hit_name := "hit_arrow"
 	match elem:
 		"fire":
