@@ -66,6 +66,19 @@ var game_time := 0.0
 var upgrade_choices: Array = []
 var autotest := false
 var _boss_shown := {}  # 本波已演出过出场的 Boss id
+var _bestiary := {}  # 已遇敌人图鉴（user://bestiary.json）
+
+# ---------- 主动技能（KR 式：免费+冷却+点地释放；解锁/升级走三选一） ----------
+
+const SKILLS := {
+	"skill_meteor": {"name": "陨星术", "icon": "☄️", "cd": 12.0},
+	"skill_slow": {"name": "时滞", "icon": "🌀", "cd": 15.0},
+	"skill_militia": {"name": "民兵", "icon": "🛡️", "cd": 10.0},
+}
+var skill_cd := {}  # id -> 剩余冷却秒
+var targeting := ""  # 待点地释放的技能 id
+var skill_buttons := {}
+var skill_bar: HBoxContainer
 
 
 func _ready() -> void:
@@ -95,6 +108,8 @@ func _ready() -> void:
 	restart_button.pressed.connect(func() -> void: get_tree().reload_current_scene())
 	restart_button.focus_mode = Control.FOCUS_NONE
 	_build_shop()
+	_build_skills()
+	_load_bestiary()
 	_migrate_legacy_save()
 	_refresh_preview()
 	_render()
@@ -280,6 +295,114 @@ func log_msg(text: String) -> void:
 	print(text)
 
 
+# ---------- 主动技能 ----------
+
+func _build_skills() -> void:
+	skill_bar = HBoxContainer.new()
+	skill_bar.anchor_left = 1.0
+	skill_bar.anchor_right = 1.0
+	skill_bar.offset_left = -350
+	skill_bar.offset_top = 52
+	skill_bar.offset_right = -16
+	skill_bar.offset_bottom = 104
+	skill_bar.alignment = BoxContainer.ALIGNMENT_END
+	skill_bar.add_theme_constant_override("separation", 8)
+	add_child(skill_bar)
+	for id in SKILLS:
+		var b := Button.new()
+		b.custom_minimum_size = Vector2(104, 48)
+		b.add_theme_font_size_override("font_size", 14)
+		b.pressed.connect(_on_skill_pressed.bind(id))
+		b.visible = false
+		skill_bar.add_child(b)
+		skill_buttons[id] = b
+
+
+func _skill_unlocked(id: String) -> bool:
+	return get_mod(id, 0.0) > 0.0
+
+
+func _on_skill_pressed(id: String) -> void:
+	if _skill_cd_left(id) > 0.0:
+		log_msg("%s 冷却中（%.0fs）" % [SKILLS[id]["name"], _skill_cd_left(id)])
+		return
+	if id == "skill_slow":
+		_cast_skill(id, Vector2.ZERO)  # 全场技能无需点地
+	else:
+		targeting = id
+		log_msg("点击战场释放【%s】（ESC 取消）" % SKILLS[id]["name"])
+
+
+func _skill_cd_left(id: String) -> float:
+	return float(skill_cd.get(id, 0.0))
+
+
+func _cast_skill(id: String, pos: Vector2) -> void:
+	if not _skill_unlocked(id) or _skill_cd_left(id) > 0.0:
+		return
+	var lv := int(get_mod(id, 0.0))
+	skill_cd[id] = float(SKILLS[id]["cd"])
+	match id:
+		"skill_meteor":
+			var dmg := 40.0 + 25.0 * float(lv - 1)
+			for e in alive_enemies():
+				var en := e as Enemy
+				if en.position.distance_to(pos) <= 70.0:
+					en.take_damage(dmg, "fire")
+					en.apply_burn(6.0 + 2.0 * lv, 2.0)
+			FxBank.play(fx_ground, "aoe_fire", pos, {"scale": 0.85, "priority": true})
+			Sfx.play("explode", -1.0)
+			_shake(2.5)
+			log_msg("☄️ 陨星术命中！")
+		"skill_slow":
+			var dur := 3.0 + 0.5 * float(lv - 1)
+			for e in alive_enemies():
+				(e as Enemy).apply_slow(0.6, dur)
+			if not FxBank.reduced_motion:
+				var tw := create_tween()
+				modulate = Color(0.72, 0.85, 1.0)
+				tw.tween_property(self, "modulate", Color.WHITE, 0.4)
+			Sfx.play("rx_steam", -1.0)
+			log_msg("🌀 时滞领域展开！")
+		"skill_militia":
+			var hp := 60.0 + 30.0 * float(lv - 1)
+			var m := Militia.new()
+			m.setup(self, hp, 18.0, 10.0)
+			m.position = _snap_to_path(pos)
+			add_child(m)
+			FxBank.play(fx_ground, "fx_summon", m.position, {"scale": 0.5, "speed": 1.8})
+			Sfx.play("build", -3.0)
+			log_msg("🛡️ 民兵就位！")
+
+
+## 民兵落点吸附：40px 内的路径点自动吸附
+func _snap_to_path(pos: Vector2) -> Vector2:
+	var best := pos
+	var best_d := 40.0
+	var p: Array = DataLoader.rules.get("path", [])
+	for pt in p:
+		var pp := Vector2(float(pt[0]), float(pt[1]))
+		var d := pos.distance_to(pp)
+		if d < best_d:
+			best_d = d
+			best = pp
+	return best
+
+
+func _load_bestiary() -> void:
+	if FileAccess.file_exists("user://bestiary.json"):
+		var data: Variant = JSON.parse_string(FileAccess.get_file_as_string("user://bestiary.json"))
+		if data is Dictionary:
+			_bestiary = data
+
+
+func _save_bestiary() -> void:
+	var f := FileAccess.open("user://bestiary.json", FileAccess.WRITE)
+	if f != null:
+		f.store_string(JSON.stringify(_bestiary))
+		f.close()
+
+
 func alive_enemies() -> Array:
 	var out: Array = []
 	for e in enemies_node.get_children():
@@ -305,6 +428,30 @@ func spawn_enemy_at(id: String, pos: Vector2, mul: float) -> void:
 	if bool(def.get("boss", false)) and not _boss_shown.has(id):
 		_boss_shown[id] = true
 		_boss_intro(String(def.get("name", id)), pos)
+	# 图鉴首见：弹提示条（测试模式静默）
+	if not test_mode and not _bestiary.has(id):
+		_bestiary[id] = 1
+		_save_bestiary()
+		_new_enemy_toast(def)
+
+
+## 新敌人首见提示条
+func _new_enemy_toast(def: Dictionary) -> void:
+	var l := Label.new()
+	l.text = "新敌人 %s %s： %s" % [def.get("emoji", "👹"), def.get("name", "???"), def.get("desc", "")]
+	l.add_theme_font_size_override("font_size", 20)
+	l.add_theme_color_override("font_color", Color(1, 0.85, 0.5))
+	l.add_theme_color_override("font_outline_color", Color(0.08, 0.05, 0.02, 0.92))
+	l.add_theme_constant_override("outline_size", 8)
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.position = Vector2(140, 118)
+	l.size = Vector2(1000, 32)
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(l)
+	var tw := create_tween()
+	tw.tween_interval(2.4)
+	tw.tween_property(l, "modulate:a", 0.0, 0.4)
+	tw.tween_callback(l.queue_free)
 
 
 ## Boss 出场演出：压暗 + 招唤光柱 + 名称横幅 + 震屏（非阻塞，约 1.4 秒）
@@ -402,6 +549,21 @@ func _render() -> void:
 		mode_button.text = "目标：%s" % MODE_NAMES[sel_tower.target_mode]
 	else:
 		path_view.show_range = false
+	# 技能按钮状态
+	for id in skill_buttons:
+		var sb := skill_buttons[id] as Button
+		var unlocked := _skill_unlocked(id)
+		sb.visible = unlocked and not modal
+		if not unlocked:
+			continue
+		var cd_left := _skill_cd_left(id)
+		var sd: Dictionary = SKILLS[id]
+		if cd_left > 0.0:
+			sb.text = "%s %s\n%.0fs" % [sd["icon"], sd["name"], cd_left]
+			sb.disabled = true
+		else:
+			sb.text = "%s %s\n就绪" % [sd["icon"], sd["name"]]
+			sb.disabled = state == "over"
 	path_view.queue_redraw()  # 自绘层数据变了必须手动触发重绘
 
 
@@ -430,7 +592,11 @@ func _unhandled_input(event: InputEvent) -> void:
 				get_tree().reload_current_scene()
 		return
 	if event is InputEventKey and event.is_pressed() and (event as InputEventKey).keycode == KEY_ESCAPE:
-		# ESC：取消拖拽 / 取消选塔（桌面快捷键，触屏用取消按钮）
+		# ESC：取消技能瞄准 / 取消拖拽 / 取消选塔（桌面快捷键，触屏用取消按钮）
+		if targeting != "":
+			targeting = ""
+			log_msg("已取消技能释放")
+			return
 		_cancel_drag()
 		shop_sel = ""
 		sel_tower = null
@@ -487,6 +653,12 @@ func _input(event: InputEvent) -> void:
 
 
 func _handle_click(pos: Vector2) -> void:
+	# 技能瞄准优先：点地释放
+	if targeting != "":
+		var t := targeting
+		targeting = ""
+		_cast_skill(t, pos)
+		return
 	# 纯点击：选中 / 建塔 / 取消（移动与合成都走拖拽）
 	var t: Variant = _tower_at(pos)
 	if t != null:
@@ -769,6 +941,9 @@ func _swap_towers(a: Tower, b: Tower) -> void:
 
 func _process(delta: float) -> void:
 	game_time += delta
+	# 技能冷却走秒（受加速影响，符合直觉）
+	for id in skill_cd:
+		skill_cd[id] = maxf(0.0, float(skill_cd[id]) - delta)
 	if drag_tower != null and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		_finish_drag(get_global_mouse_position())
 	if state == "wave":

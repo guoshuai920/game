@@ -7,6 +7,7 @@
 	"waveBonusBase": 25,
 	"waveBonusPerWave": 5,
 	"highSlotRangeMul": 1.2,
+	"earlyCallGoldPer": 2,
 	"moveFree": true,
 	"path": [[-40, 150], [250, 150], [250, 380], [560, 380], [560, 130], [880, 130], [880, 470], [1140, 470], [1140, 600], [1200, 600]],
 	"castle": [1200, 600],

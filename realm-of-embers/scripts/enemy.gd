@@ -31,6 +31,8 @@ var poison_timer := 0.0
 var poison_spread_dps := 0.0
 var stun_timer := 0.0
 var speed_buff := 1.0
+var hold_by: Node2D = null  # 被民兵纠缠：站在原地交战
+var _phases_done: Array = []
 
 var _super_timer := 0.0
 var _corrode_timer := 0.0
@@ -259,6 +261,49 @@ func _register_element(elem: String) -> void:
 			return
 
 
+## Boss 阶段动作：summon:怪:数量 / enrage:倍率 / armor:增量 / heal:比例 / disable
+func _run_phase(act: String) -> void:
+	var parts := act.split(":")
+	if parts.is_empty():
+		return
+	match parts[0]:
+		"summon":
+			var mid := parts[1] if parts.size() > 1 else "skeleton"
+			var count := int(parts[2]) if parts.size() > 2 else 2
+			FxBank.play(game.fx_ground, "fx_summon", position, {"scale": 0.9})
+			Sfx.play("build", -4.0)
+			for i in count:
+				game.spawn_enemy_at(mid, position + Vector2(randf_range(-24, 24), randf_range(-14, 14)), spawn_mul)
+			game.log_msg("🌀 %s 召唤了援军！" % display_name)
+		"enrage":
+			var mul := float(parts[1]) if parts.size() > 1 else 1.4
+			speed_buff *= mul
+			FxBank.play(game.fx_air, "fx_rage", position, {"life": 1.2, "priority": true})
+			game.log_msg("🔥 %s 进入狂暴！" % display_name)
+		"armor":
+			var add := float(parts[1]) if parts.size() > 1 else 0.2
+			armor = minf(0.85, armor + add)
+			FxBank.play(game.fx_air, "rx_overload", position, {"scale": 0.8, "priority": true})
+			game.log_msg("🪨 %s 甲壳增生！护甲提升" % display_name)
+		"heal":
+			var pct := float(parts[1]) if parts.size() > 1 else 0.2
+			hp = minf(max_hp, hp + max_hp * pct)
+			FxBank.play(game.fx_ground, "fx_heal", position, {"priority": true})
+			game.log_msg("💚 %s 恢复了 %d 点生命力" % [display_name, int(max_hp * pct)])
+		"disable":
+			var best: Variant = null
+			var best_d := 240.0
+			for t in game.towers_node.get_children():
+				var d: float = position.distance_to(t.position)
+				if d <= best_d and t.disabled_time <= 0.0:
+					best_d = d
+					best = t
+			if best != null:
+				best.disabled_time = 4.0
+				Sfx.play("tower_disabled", -2.0)
+				game.log_msg("🦂 %s 瘫痪了一座塔！" % display_name)
+
+
 func _trigger_reaction(r: Dictionary) -> void:
 	match String(r.get("id")):
 		"steam":
@@ -281,6 +326,15 @@ func _trigger_reaction(r: Dictionary) -> void:
 
 func _specials(delta: float) -> void:
 	var def := DataLoader.enemy(id)
+	# Boss 阶段脚本：血量阈值触发一次性动作
+	var phases: Variant = def.get("phases", [])
+	if phases is Array:
+		for i in (phases as Array).size():
+			var pp := phases[i] as Dictionary
+			var key := "p%d" % i
+			if hp / maxf(1.0, max_hp) <= float(pp.get("pct", 0.0)) and not _phases_done.has(key):
+				_phases_done.append(key)
+				_run_phase(String(pp.get("act", "")))
 	# 狂暴阈值
 	var rage: Variant = def.get("rage", [])
 	if rage is Array:
@@ -339,6 +393,12 @@ func _move(delta: float) -> void:
 	var sp := base_speed * slow_mul * speed_buff
 	if sp <= 0.0 or _wp.is_empty():
 		return
+	# 被民兵纠缠：原地交战（民兵结算双方伤害）
+	if hold_by != null:
+		if not is_instance_valid(hold_by) or not hold_by.alive:
+			hold_by = null
+		else:
+			return
 	if flying:
 		var d := _castle - position
 		var step := sp * delta

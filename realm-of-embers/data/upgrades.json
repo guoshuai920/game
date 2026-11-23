@@ -1,22 +1,209 @@
 [
-	{"id":"aim","name":"精准","emoji":"🎯","rarity":"common","desc":"全塔暴击率 +10%","mod":"crit","amount":0.10},
-	{"id":"whet","name":"磨刀","emoji":"⚔️","rarity":"common","desc":"全塔伤害 +8%","mod":"dmg","amount":0.08},
-	{"id":"haste","name":"疾速","emoji":"🌀","rarity":"common","desc":"全塔攻速 +8%","mod":"rate","amount":0.08},
-	{"id":"eagle","name":"远视","emoji":"🦅","rarity":"common","desc":"全塔射程 +6%","mod":"range","amount":0.06},
-	{"id":"tax","name":"王室税赋","emoji":"🧾","rarity":"common","desc":"每波额外 +10 金","mod":"wave_gold","amount":10},
-	{"id":"harvest","name":"开源","emoji":"🪙","rarity":"common","desc":"击杀赏金 +15%","mod":"bounty","amount":0.15},
-	{"id":"merchant","name":"备战","emoji":"🤝","rarity":"common","desc":"卖塔返还比例 +10%","mod":"sell","amount":0.10},
-	{"id":"vault","name":"金库","emoji":"💰","rarity":"common","desc":"立即获得 60 金","mod":"gold","amount":60},
-	{"id":"scholar","name":"元素学者","emoji":"🧪","rarity":"rare","desc":"元素反应伤害 +50%","mod":"reaction","amount":0.50},
-	{"id":"usury","name":"高利贷","emoji":"🏦","rarity":"rare","desc":"利息上限 +5","mod":"interest_cap","amount":5},
-	{"id":"deepfreeze","name":"深寒","emoji":"🧊","rarity":"rare","desc":"所有减速效果加深 10%","mod":"slow_extra","amount":0.10},
-	{"id":"embersoul","name":"烈焰之魂","emoji":"🔥","rarity":"rare","desc":"灼烧伤害 +35%","mod":"burn","amount":0.35},
-	{"id":"venomsoul","name":"剧毒","emoji":"☠️","rarity":"rare","desc":"毒素伤害 +35%","mod":"poison","amount":0.35},
-	{"id":"coil","name":"超导线圈","emoji":"⚡","rarity":"rare","desc":"雷塔连锁目标 +1","mod":"chain","amount":1},
-	{"id":"drum","name":"战鼓","emoji":"🥁","rarity":"rare","desc":"全塔攻速 +15%","mod":"rate","amount":0.15},
-	{"id":"rampart","name":"城防工事","emoji":"🧱","rarity":"rare","desc":"城堡耐久 +5","mod":"lives","amount":5},
-	{"id":"merger","name":"合成师","emoji":"♻️","rarity":"epic","desc":"合成时 25% 概率保留材料塔","mod":"merge_keep","amount":0.25},
-	{"id":"dragonblood","name":"龙血","emoji":"🐉","rarity":"epic","desc":"全塔伤害 +20%","mod":"dmg","amount":0.20},
-	{"id":"sage","name":"贤者契约","emoji":"📜","rarity":"epic","desc":"利息税率 +5%","mod":"interest_rate","amount":0.05},
-	{"id":"royalguard","name":"禁卫军","emoji":"🛡️","rarity":"epic","desc":"城堡耐久 +10","mod":"lives","amount":10}
+ {
+  "id": "aim",
+  "name": "精准",
+  "emoji": "🎯",
+  "rarity": "common",
+  "desc": "全塔暴击率 +10%",
+  "mod": "crit",
+  "amount": 0.1
+ },
+ {
+  "id": "whet",
+  "name": "磨刀",
+  "emoji": "⚔️",
+  "rarity": "common",
+  "desc": "全塔伤害 +8%",
+  "mod": "dmg",
+  "amount": 0.08
+ },
+ {
+  "id": "haste",
+  "name": "疾速",
+  "emoji": "🌀",
+  "rarity": "common",
+  "desc": "全塔攻速 +8%",
+  "mod": "rate",
+  "amount": 0.08
+ },
+ {
+  "id": "eagle",
+  "name": "远视",
+  "emoji": "🦅",
+  "rarity": "common",
+  "desc": "全塔射程 +6%",
+  "mod": "range",
+  "amount": 0.06
+ },
+ {
+  "id": "tax",
+  "name": "王室税赋",
+  "emoji": "🧾",
+  "rarity": "common",
+  "desc": "每波额外 +10 金",
+  "mod": "wave_gold",
+  "amount": 10
+ },
+ {
+  "id": "harvest",
+  "name": "开源",
+  "emoji": "🪙",
+  "rarity": "common",
+  "desc": "击杀赏金 +15%",
+  "mod": "bounty",
+  "amount": 0.15
+ },
+ {
+  "id": "merchant",
+  "name": "备战",
+  "emoji": "🤝",
+  "rarity": "common",
+  "desc": "卖塔返还比例 +10%",
+  "mod": "sell",
+  "amount": 0.1
+ },
+ {
+  "id": "vault",
+  "name": "金库",
+  "emoji": "💰",
+  "rarity": "common",
+  "desc": "立即获得 60 金",
+  "mod": "gold",
+  "amount": 60
+ },
+ {
+  "id": "scholar",
+  "name": "元素学者",
+  "emoji": "🧪",
+  "rarity": "rare",
+  "desc": "元素反应伤害 +50%",
+  "mod": "reaction",
+  "amount": 0.5
+ },
+ {
+  "id": "usury",
+  "name": "高利贷",
+  "emoji": "🏦",
+  "rarity": "rare",
+  "desc": "利息上限 +5",
+  "mod": "interest_cap",
+  "amount": 5
+ },
+ {
+  "id": "deepfreeze",
+  "name": "深寒",
+  "emoji": "🧊",
+  "rarity": "rare",
+  "desc": "所有减速效果加深 10%",
+  "mod": "slow_extra",
+  "amount": 0.1
+ },
+ {
+  "id": "embersoul",
+  "name": "烈焰之魂",
+  "emoji": "🔥",
+  "rarity": "rare",
+  "desc": "灼烧伤害 +35%",
+  "mod": "burn",
+  "amount": 0.35
+ },
+ {
+  "id": "venomsoul",
+  "name": "剧毒",
+  "emoji": "☠️",
+  "rarity": "rare",
+  "desc": "毒素伤害 +35%",
+  "mod": "poison",
+  "amount": 0.35
+ },
+ {
+  "id": "coil",
+  "name": "超导线圈",
+  "emoji": "⚡",
+  "rarity": "rare",
+  "desc": "雷塔连锁目标 +1",
+  "mod": "chain",
+  "amount": 1
+ },
+ {
+  "id": "drum",
+  "name": "战鼓",
+  "emoji": "🥁",
+  "rarity": "rare",
+  "desc": "全塔攻速 +15%",
+  "mod": "rate",
+  "amount": 0.15
+ },
+ {
+  "id": "rampart",
+  "name": "城防工事",
+  "emoji": "🧱",
+  "rarity": "rare",
+  "desc": "城堡耐久 +5",
+  "mod": "lives",
+  "amount": 5
+ },
+ {
+  "id": "merger",
+  "name": "合成师",
+  "emoji": "♻️",
+  "rarity": "epic",
+  "desc": "合成时 25% 概率保留材料塔",
+  "mod": "merge_keep",
+  "amount": 0.25
+ },
+ {
+  "id": "dragonblood",
+  "name": "龙血",
+  "emoji": "🐉",
+  "rarity": "epic",
+  "desc": "全塔伤害 +20%",
+  "mod": "dmg",
+  "amount": 0.2
+ },
+ {
+  "id": "sage",
+  "name": "贤者契约",
+  "emoji": "📜",
+  "rarity": "epic",
+  "desc": "利息税率 +5%",
+  "mod": "interest_rate",
+  "amount": 0.05
+ },
+ {
+  "id": "royalguard",
+  "name": "禁卫军",
+  "emoji": "🛡️",
+  "rarity": "epic",
+  "desc": "城堡耐久 +10",
+  "mod": "lives",
+  "amount": 10
+ },
+ {
+  "id": "meteor",
+  "name": "陨星术",
+  "emoji": "☄️",
+  "rarity": "epic",
+  "desc": "解锁技能：点击战场砸下陨星，范围伤害并点燃（重复选中升级）",
+  "mod": "skill_meteor",
+  "amount": 1
+ },
+ {
+  "id": "timelag",
+  "name": "时滞领域",
+  "emoji": "🌀",
+  "rarity": "rare",
+  "desc": "解锁技能：全场敌人减速40%持续3秒（重复选中延长时间）",
+  "mod": "skill_slow",
+  "amount": 1
+ },
+ {
+  "id": "militia",
+  "name": "王室民兵",
+  "emoji": "🛡️",
+  "rarity": "epic",
+  "desc": "解锁技能：路径任意处空投民兵，阻截地面敌人8秒",
+  "mod": "skill_militia",
+  "amount": 1
+ }
 ]
