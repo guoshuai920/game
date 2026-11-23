@@ -59,6 +59,10 @@ scripts/ main.gd（主循环/经济/UI）· tower.gd · enemy.gd · projectile.g
 
 ## 文档
 
+- [开发路线图 ROADMAP.md](docs/ROADMAP.md)：版本阶梯、待办任务、验收标准（唯一排期来源）
+- [多地图规划 multi-map-plan.md](docs/multi-map-plan.md)
+- 技能/音效等管线说明见上方"视觉与特效管线"章节
+
 - [docs/multi-map-plan.md](docs/multi-map-plan.md) —— 真·多地图计划（草地/雪山/熔岩三图递进，待实施）
 
 ## 安卓移植清单（规划）
