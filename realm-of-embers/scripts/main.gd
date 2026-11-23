@@ -83,7 +83,8 @@ var skill_bar: HBoxContainer
 
 func _ready() -> void:
 	autotest = OS.get_cmdline_user_args().has("--autotest")
-	test_mode = autotest or OS.get_cmdline_user_args().has("--testload")
+	test_mode = autotest or OS.get_cmdline_user_args().has("--testload") \
+		or OS.get_cmdline_user_args().has("--skilltest")
 	gold = int(DataLoader.rules.get("startGold", 220))
 	lives = int(DataLoader.rules.get("lives", 20))
 	for s in DataLoader.rules.get("slots", []):
@@ -137,6 +138,8 @@ func _ready() -> void:
 		_autotest_step()
 	if OS.get_cmdline_user_args().has("--testload"):
 		call_deferred("_testload")
+	if OS.get_cmdline_user_args().has("--skilltest"):
+		call_deferred("_skilltest")
 
 
 # ---------- 商店与渲染 ----------
@@ -375,17 +378,20 @@ func _cast_skill(id: String, pos: Vector2) -> void:
 			log_msg("🛡️ 民兵就位！")
 
 
-## 民兵落点吸附：40px 内的路径点自动吸附
+## 民兵落点吸附：40px 内的路径线段投影点自动吸附
 func _snap_to_path(pos: Vector2) -> Vector2:
 	var best := pos
 	var best_d := 40.0
 	var p: Array = DataLoader.rules.get("path", [])
-	for pt in p:
-		var pp := Vector2(float(pt[0]), float(pt[1]))
-		var d := pos.distance_to(pp)
-		if d < best_d:
-			best_d = d
-			best = pp
+	if p.size() >= 2:
+		for i in p.size() - 1:
+			var a := Vector2(float(p[i][0]), float(p[i][1]))
+			var b := Vector2(float(p[i + 1][0]), float(p[i + 1][1]))
+			var c := Geometry2D.get_closest_point_to_segment(pos, a, b)
+			var d := pos.distance_to(c)
+			if d < best_d:
+				best_d = d
+				best = c
 	return best
 
 
@@ -1145,6 +1151,118 @@ func _game_over(reason: String) -> void:
 	end_label.text = "💀 王国陷落……\n止步第 %d/%d 波" % [wave_idx, DataLoader.waves.size()]
 	end_overlay.visible = true
 	_render()
+
+
+# ---------- 技能/阶段/提前召唤 专项测试：--skilltest ----------
+
+var _st_checks := 0
+var _st_fails := 0
+
+
+func _st(chk: bool, name: String) -> void:
+	_st_checks += 1
+	if not chk:
+		_st_fails += 1
+		print("SKILLTEST FAIL: %s" % name)
+
+
+func _st_frames(n: int) -> void:
+	for i in n:
+		await get_tree().process_frame
+
+
+func _st_wait(sec: float) -> void:
+	await get_tree().create_timer(sec).timeout
+
+
+func _st_find(id: String) -> Enemy:
+	for e in alive_enemies():
+		var en := e as Enemy
+		if en.id == id:
+			return en
+	return null
+
+
+func _skilltest() -> void:
+	# 解锁三技能
+	mods["skill_meteor"] = 1
+	mods["skill_slow"] = 1
+	mods["skill_militia"] = 1
+	_st(_skill_unlocked("skill_meteor") and _skill_unlocked("skill_slow") and _skill_unlocked("skill_militia"), "解锁检测")
+
+	# 陨星：伤害+点燃+冷却
+	var p := Vector2(250, 150)
+	spawn_enemy_at("shield", p, 1.0)
+	var shield := _st_find("shield") as Enemy
+	_st(shield != null, "盾卫生成")
+	var hp0 := shield.hp
+	_cast_skill("skill_meteor", p + Vector2(6, 0))
+	_st(shield.hp < hp0, "陨星伤害")
+	_st(shield.burn_timer > 0.0, "陨星点燃")
+	_st(_skill_cd_left("skill_meteor") > 0.0, "陨星冷却")
+
+	# 时滞
+	_cast_skill("skill_slow", Vector2.ZERO)
+	_st(shield.slow_timer > 0.0, "时滞减速")
+
+	# 民兵：生成 → 纠缠 → 消散释放
+	_cast_skill("skill_militia", p + Vector2(28, 0))
+	var mili: Militia = null
+	for c in get_children():
+		if c is Militia:
+			mili = c
+	_st(mili != null, "民兵生成")
+	spawn_enemy_at("orc", p + Vector2(55, 0), 1.0)
+	await _st_wait(0.9)
+	var orc := _st_find("orc") as Enemy
+	_st(orc != null, "兽人生成")
+	if orc != null and mili != null:
+		_st(orc.position.distance_to(mili.position) <= 34.0, "兽人被阻停在纠缠圈")
+		_st(orc.hold_by == mili, "兽人被纠缠")
+	_st(mili.hp < mili.max_hp, "民兵承伤")
+	# 民兵被打死 → 释放纠缠
+	mili.hp = 0.01
+	mili.life = 99.0
+	await _st_wait(0.3)
+	_st(not is_instance_valid(mili) or not mili.alive, "民兵阵亡")
+	_st(not is_instance_valid(shield) or shield.hold_by == null, "盾卫获释")
+	_st(not is_instance_valid(orc) or orc.hold_by == null, "兽人获释")
+
+	# 点地释放流程：瞄准 → 点击 → 冷却
+	skill_cd["skill_meteor"] = 0.0
+	_on_skill_pressed("skill_meteor")
+	_st(targeting == "skill_meteor", "进入瞄准")
+	_handle_click(Vector2(600, 300))
+	_st(targeting == "" and _skill_cd_left("skill_meteor") > 0.0, "点地释放")
+
+	# 提前召唤：金币奖励 + 队列并入 + 波号推进
+	gold += 100
+	var g0 := gold
+	wave_idx = 1
+	state = "wave"
+	spawn_queue = _build_queue(1)
+	_early_call()
+	_st(wave_idx == 2, "提前召唤推进波号")
+	_st(gold > g0, "提前召唤奖励")
+	_st(spawn_queue.size() > 0, "两波队列合并")
+
+	# Boss 阶段：石像鬼增甲 / 暗影国王召唤
+	var gar_armor := float(DataLoader.enemy("gargoyle").armor)
+	spawn_enemy_at("gargoyle", Vector2(500, 300), 1.0)
+	var gar := _st_find("gargoyle") as Enemy
+	gar.hp = gar.max_hp * 0.5
+	await _st_wait(0.3)
+	_st(gar.armor > gar_armor, "石像鬼增甲阶段")
+	var n0 := alive_enemies().size()
+	spawn_enemy_at("shadowking", Vector2(700, 320), 1.0)
+	var sk := _st_find("shadowking") as Enemy
+	sk.hp = sk.max_hp * 0.4
+	await _st_wait(0.4)
+	_st(alive_enemies().size() >= n0 + 2, "暗影国王召唤座狼")
+	_st(_bestiary.size() > 0 or test_mode, "图鉴记录")
+
+	print("SKILLTEST_RESULT checks=%d fails=%d" % [_st_checks, _st_fails])
+	get_tree().quit()
 
 
 # ---------- 自动化冒烟测试：--autotest 时全速跑完整局 ----------

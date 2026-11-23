@@ -11,9 +11,9 @@ var _settings: SettingsPanel
 
 
 func _ready() -> void:
-	# 自动测试/读档冒烟直接进战斗场景，不经菜单
+	# 自动测试/读档冒烟/技能专项直接进战斗场景，不经菜单
 	var args := OS.get_cmdline_user_args()
-	if args.has("--autotest") or args.has("--testload"):
+	if args.has("--autotest") or args.has("--testload") or args.has("--skilltest"):
 		get_tree().change_scene_to_file.call_deferred("res://scenes/Main.tscn")
 		return
 	SettingsPanel.apply_saved()
