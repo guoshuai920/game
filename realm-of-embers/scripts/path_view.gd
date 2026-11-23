@@ -1,32 +1,62 @@
 extends Node2D
-## 场景绘制层：路径、塔位、城堡、选中塔的射程圈、电弧闪光。
+## 场景绘制层：纹理化地面/土路/塔位基座、城堡、选中塔的射程圈、电弧闪光。
+## 纹理由 tools/bake_ground.mjs 烘焙；缺失时自动退回纯色绘制（v0.3 前外观）。
 
 var show_range := false
 var range_center := Vector2.ZERO
 var range_radius := 0.0
-var build_mode := false  # 建塔选塔中：塔位高亮显示 + 号
-var _flashes: Array = []  # {a: Vector2, b: Vector2, ttl: float, color: Color}
+var build_mode := false
+var _flashes: Array = []
+
+var _tex_grass: Texture2D
+var _tex_path: Texture2D
+var _tex_slot: Texture2D
+
+
+func _ready() -> void:
+	# 平铺绘制需要纹理 repeat
+	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	_tex_grass = load("res://assets/ground/grass.png")
+	_tex_path = load("res://assets/ground/path.png")
+	_tex_slot = load("res://assets/ground/slot.png")
 
 
 func _draw() -> void:
 	var r: Dictionary = DataLoader.rules
+	# 地面（有纹理则整屏平铺，否则退回底色由 Background 承担）
+	if _tex_grass != null:
+		draw_texture_rect(_tex_grass, Rect2(0, 0, 1280, 720), true)
 	# 路径
 	var pts: Array = r.get("path", [])
 	if pts.size() >= 2:
-		var line := PackedVector2Array()
-		for p in pts:
-			line.append(Vector2(float(p[0]), float(p[1])))
-		draw_polyline(line, Color(0.32, 0.27, 0.19, 1.0), 30.0, true)
-		draw_polyline(line, Color(0.52, 0.45, 0.32, 1.0), 24.0, true)
-	# 塔位
+		if _tex_path != null:
+			# 逐段按角度铺路砖，转角用方块补
+			for i in pts.size() - 1:
+				var a := Vector2(float(pts[i][0]), float(pts[i][1]))
+				var b := Vector2(float(pts[i + 1][0]), float(pts[i + 1][1]))
+				var seg := b - a
+				var mid := (a + b) * 0.5
+				draw_set_transform(Vector2(mid.x, mid.y), seg.angle(), Vector2.ONE)
+				draw_texture_rect(_tex_path, Rect2(-seg.length() * 0.5 - 4, -13, seg.length() + 8, 26), true)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+			for p in pts:
+				draw_texture_rect(_tex_path, Rect2(float(p[0]) - 13, float(p[1]) - 13, 26, 26), true)
+		else:
+			var line := PackedVector2Array()
+			for p in pts:
+				line.append(Vector2(float(p[0]), float(p[1])))
+			draw_polyline(line, Color(0.32, 0.27, 0.19, 1.0), 30.0, true)
+			draw_polyline(line, Color(0.52, 0.45, 0.32, 1.0), 24.0, true)
+	# 塔位：石板基座 + 高台金环
 	var font := ThemeDB.fallback_font
 	for s in r.get("slots", []):
 		var pos := Vector2(float(s[0]), float(s[1]))
 		var high: bool = s.size() > 2 and bool(s[2])
+		if _tex_slot != null:
+			draw_texture_rect(_tex_slot, Rect2(pos.x - 22, pos.y - 22, 44, 44), false)
 		if high:
-			draw_circle(pos, 23.0, Color(0.34, 0.29, 0.10, 0.95))
 			draw_arc(pos, 23.0, 0.0, TAU, 24, Color(1.0, 0.85, 0.35, 0.9), 2.0)
-		else:
+		elif _tex_slot == null:
 			var fill := Color(0.16, 0.20, 0.28, 0.9)
 			var ring := Color(0.45, 0.55, 0.75, 0.7)
 			if build_mode:
@@ -34,6 +64,8 @@ func _draw() -> void:
 				ring = Color(0.55, 0.85, 1.0, 0.95)
 			draw_circle(pos, 22.0, fill)
 			draw_arc(pos, 22.0, 0.0, TAU, 24, ring, 2.0)
+		if build_mode and _tex_slot != null:
+			draw_circle(pos, 22.0, Color(0.55, 0.85, 1.0, 0.10))
 		if build_mode:
 			draw_string(font, pos + Vector2(-22, 7), "+", HORIZONTAL_ALIGNMENT_CENTER, 44, 18, Color(0.85, 0.95, 1.0, 0.9))
 	# 城堡（像素精灵，脚底对齐城堡锚点）

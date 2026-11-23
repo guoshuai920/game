@@ -28,6 +28,14 @@ const RARITY_WEIGHTS := {"common": 60.0, "rare": 30.0, "epic": 10.0}
 @onready var next_wave_button: Button = $NextWaveButton
 @onready var restart_run_button: Button = $TopBar/RestartRunButton
 @onready var quit_button: Button = $TopBar/QuitButton
+@onready var speed_button: Button = $TopBar/SpeedButton
+@onready var pause_button: Button = $TopBar/PauseButton
+@onready var tips_label: Label = $TipsLabel
+@onready var tips_skip: Button = $TipsSkip
+@onready var pause_overlay: Control = $PauseOverlay
+@onready var pause_resume: Button = $PauseOverlay/Box/ResumeButton
+@onready var pause_settings_btn: Button = $PauseOverlay/Box/SettingsButton
+@onready var pause_menu_btn: Button = $PauseOverlay/Box/MenuButton
 @onready var save_overlay: Control = $SaveOverlay
 @onready var slot_box: VBoxContainer = $SaveOverlay/SlotBox
 @onready var new_game_button: Button = $SaveOverlay/NewGameButton
@@ -68,13 +76,20 @@ func _ready() -> void:
 	for s in DataLoader.rules.get("slots", []):
 		var high: bool = (s as Array).size() > 2 and bool((s as Array)[2])
 		slots.append({"pos": Vector2(float(s[0]), float(s[1])), "high": high, "tower": null})
+	SettingsPanel.apply_saved()
 	next_wave_button.pressed.connect(_on_next_wave)
 	next_wave_button.text = "开始"
 	motion_button.pressed.connect(_on_toggle_motion)
 	motion_button.text = "动效:全开"
+	speed_button.pressed.connect(_on_speed)
+	pause_button.pressed.connect(_on_pause)
+	pause_resume.pressed.connect(_on_resume)
+	pause_settings_btn.pressed.connect(func() -> void: _pause_settings.open())
+	pause_menu_btn.pressed.connect(_back_to_menu)
+	tips_skip.pressed.connect(_tutorial_finish)
 	new_game_button.pressed.connect(_on_new_game)
 	restart_run_button.pressed.connect(func() -> void: get_tree().reload_current_scene())
-	quit_button.pressed.connect(func() -> void: get_tree().quit())
+	quit_button.pressed.connect(_back_to_menu)
 	sell_button.pressed.connect(_on_sell)
 	mode_button.pressed.connect(_on_mode)
 	restart_button.pressed.connect(func() -> void: get_tree().reload_current_scene())
@@ -85,8 +100,22 @@ func _ready() -> void:
 	_render()
 	log_msg("建立防线！点下方选塔，再点发光格位放置；拖同类同星合成升星（M 键静音）")
 	Sfx.ambient()
-	if not test_mode and _any_slot_save():
-		_show_save_panel()
+	_pause_settings = SettingsPanel.new()
+	add_child(_pause_settings)
+	# 新冒险：静默选第一个空档；老玩家：弹存档面板
+	if not test_mode:
+		if GameMenu.start_fresh:
+			GameMenu.start_fresh = false
+			for i in [1, 2, 3]:
+				if not FileAccess.file_exists(_slot_path(i)):
+					active_slot = i
+					log_msg("新开局存入档位 %d" % i)
+					break
+			if active_slot == 0:
+				_show_save_panel()
+		elif _any_slot_save():
+			_show_save_panel()
+		_tutorial_start()
 	if autotest:
 		Engine.time_scale = 10.0
 		log_msg("[自动测试] 引擎加速 10x")
@@ -137,6 +166,113 @@ func _on_toggle_motion() -> void:
 	FxBank.reduced_motion = not FxBank.reduced_motion
 	motion_button.text = "动效:减弱" if FxBank.reduced_motion else "动效:全开"
 	log_msg("动效已%s（震屏/转场/顿帧）" % ("减弱" if FxBank.reduced_motion else "全开"))
+
+
+# ---------- 速度 / 暂停 / 回菜单 ----------
+
+const SPEED_STEPS := [1.0, 2.0, 3.0]
+var speed_idx := 0
+var _pause_settings: SettingsPanel
+
+
+func _on_speed() -> void:
+	if autotest:
+		return
+	speed_idx = (speed_idx + 1) % SPEED_STEPS.size()
+	Engine.time_scale = SPEED_STEPS[speed_idx]
+	speed_button.text = "%dx" % int(SPEED_STEPS[speed_idx])
+	log_msg("游戏速度 %dx" % int(SPEED_STEPS[speed_idx]))
+
+
+func _on_pause() -> void:
+	if state == "over" or get_tree().paused or _modal_open():
+		return
+	get_tree().paused = true
+	pause_overlay.visible = true
+
+
+func _on_resume() -> void:
+	get_tree().paused = false
+	pause_overlay.visible = false
+
+
+func _back_to_menu() -> void:
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://scenes/Menu.tscn")
+
+
+## 早期召唤奖励（KR 式）：按剩余未出怪数折算金币
+func _early_call_bonus() -> int:
+	return spawn_queue.size() * int(DataLoader.rules.get("earlyCallGoldPer", 2))
+
+
+func _early_call() -> void:
+	if state != "wave" or spawn_queue.is_empty() or wave_idx >= DataLoader.waves.size():
+		return
+	var bonus := _early_call_bonus()
+	gold += bonus
+	Sfx.play("coin", -3.0)
+	# 追加下一波出怪队列：时间顺延到当前队列末尾 + 1.2s 预备
+	var max_t := 0.0
+	for s in spawn_queue:
+		max_t = maxf(max_t, float((s as Dictionary)["t"]))
+	for s in _build_queue(wave_idx + 1):
+		var sd := s as Dictionary
+		sd["t"] = float(sd["t"]) + max_t + 1.2
+		spawn_queue.append(sd)
+	wave_idx += 1
+	_boss_shown = {}
+	log_msg("⏩ 提前召唤第 %d 波！奖励 %d 金" % [wave_idx, bonus])
+	_refresh_preview()
+	_render()
+
+
+## 提前召唤后 waves 用尽保护：末波不再奖励
+# ---------- 新手引导（事件驱动 6 步，可跳过，完成后不再出现） ----------
+
+const TUT_PATH := "user://seen_tutorial.txt"
+const TUT_STEPS := [
+	"① 点击下方商店，选一座塔（先从便宜的弩塔练手）",
+	"② 点击发光的 ⊕ 石板格位放置（金环高台射程更远）",
+	"③ 拖一座塔到同类同星塔上 → 合成升星",
+	"④ 点「开始」放第一波；波内可 ⏩ 提前召唤下一波赚金币",
+	"⑤ 挺住！波末有金币利息——攒钱也是一种防御",
+	"⑥ 战后三选一强化决定流派；顶栏可调速/暂停/动效",
+]
+var tut_step := -1
+
+
+func _tutorial_start() -> void:
+	if test_mode or FileAccess.file_exists(TUT_PATH):
+		return
+	tut_step = 0
+	_tut_show()
+
+
+func _tut_show() -> void:
+	if tut_step < 0 or tut_step >= TUT_STEPS.size():
+		return
+	tips_label.text = TUT_STEPS[tut_step]
+	tips_label.visible = true
+	tips_skip.visible = true
+
+
+func _tutorial_next() -> void:
+	tut_step += 1
+	if tut_step >= TUT_STEPS.size():
+		_tutorial_finish()
+	else:
+		_tut_show()
+
+
+func _tutorial_finish() -> void:
+	tut_step = -1
+	tips_label.visible = false
+	tips_skip.visible = false
+	var f := FileAccess.open(TUT_PATH, FileAccess.WRITE)
+	if f != null:
+		f.store_string("ok")
+		f.close()
 
 
 func log_msg(text: String) -> void:
@@ -250,7 +386,11 @@ func _render() -> void:
 	var show_sel := sel_tower != null and is_instance_valid(sel_tower) and not modal
 	sel_panel.visible = show_sel
 	tw_info.visible = show_sel
-	next_wave_button.disabled = modal or state != "planning"
+	next_wave_button.disabled = modal or (state != "planning" and (state != "wave" or spawn_queue.is_empty()))
+	if state == "wave":
+		next_wave_button.text = "⏩ 提前召唤 +%d金" % _early_call_bonus()
+	else:
+		next_wave_button.text = "开始第 %d 波" % (wave_idx + 1)
 	restart_run_button.disabled = modal
 	quit_button.disabled = modal
 	path_view.build_mode = shop_sel != "" and state != "over" and not modal
@@ -410,6 +550,8 @@ func _slot_at(pos: Vector2) -> int:
 
 func _on_shop_click(fid: String) -> void:
 	Sfx.play("ui_click", -4.0)
+	if tut_step == 0 and fid != "":
+		_tutorial_next()
 	if shop_sel == fid:
 		shop_sel = ""  # 再点一次同一个塔按钮 = 取消选择（触屏友好）
 	else:
@@ -444,6 +586,8 @@ func _build_tower(fid: String, slot_i: int) -> void:
 	FxBank.play(fx_ground, "fx_merge", t.position, {"scale": 0.6, "speed": 2.0})
 	FxBank.play(fx_air, "death_poof", t.position, {"scale": 0.8})
 	Sfx.play("build", -2.0)
+	if tut_step == 1:
+		_tutorial_next()
 	log_msg("建造 %s（-%d金）" % [_tw_name(t), cost])
 	_render()
 
@@ -530,6 +674,8 @@ func _try_merge(a: Tower, b: Tower) -> bool:
 		Sfx.play("merge", -3.0)
 		log_msg("⬆️ 合成 %s → Lv%d" % [_tw_name(b), b.level])
 	sel_tower = b
+	if tut_step == 2:
+		_tutorial_next()
 	_render()
 	return true
 
@@ -537,6 +683,10 @@ func _try_merge(a: Tower, b: Tower) -> bool:
 # ---------- 波次循环 ----------
 
 func _on_next_wave() -> void:
+	# 波内点按钮 = 提前召唤下一波（KR 式奖励）
+	if state == "wave":
+		_early_call()
+		return
 	if state != "planning" or _modal_open():
 		return
 	wave_idx += 1
@@ -548,6 +698,8 @@ func _on_next_wave() -> void:
 	if not FxBank.reduced_motion:
 		FxBank.play(fx_air, "fx_screen", Vector2(640, 360), {"z": 5, "priority": true})
 	Sfx.play("wave_start", -2.0)
+	if tut_step == 3:
+		_tutorial_next()
 	log_msg("⚔️ 第 %d/%d 波来袭！" % [wave_idx, DataLoader.waves.size()])
 	_render()
 
@@ -642,6 +794,8 @@ func _end_wave() -> void:
 	var interest := int(minf(float(gold) * rate, cap))
 	gold += bonus + interest
 	Sfx.play("wave_clear", -3.0)
+	if tut_step == 4:
+		_tutorial_next()
 	log_msg("✅ 第 %d 波守住！奖励 %d 金 + 利息 %d 金" % [wave_idx, bonus, interest])
 	_save_progress()
 	if autotest:
@@ -702,6 +856,8 @@ func _on_upgrade_chosen(u: Dictionary) -> void:
 	else:
 		mods[key] = get_mod(key, 0.0) + amount
 	log_msg("获得强化：%s %s" % [u.get("emoji", ""), u.get("name", "")])
+	if tut_step == 5:
+		_tutorial_finish()
 	upgrade_overlay.visible = false
 	state = "planning"
 	_save_progress()

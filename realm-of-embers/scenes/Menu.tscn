@@ -1,0 +1,119 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/menu.gd" id="1_menu"]
+[ext_resource type="Script" path="res://scripts/fx/ambient.gd" id="2_ambient"]
+
+[node name="Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.07, 0.09, 0.13, 1)
+
+[node name="Ashes" type="CPUParticles2D" parent="."]
+script = ExtResource("2_ambient")
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -320
+offset_top = 120
+offset_right = 320
+offset_bottom = 220
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 72
+theme_override_colors/font_color = Color(1, 0.85, 0.45, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.06, 0.03, 1)
+theme_override_constants/outline_size = 14
+text = "王国余烬"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -320
+offset_top = 226
+offset_right = 320
+offset_bottom = 254
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.62, 0.66, 0.74, 1)
+text = "Reign of Embers · 塔防肉鸽原型"
+horizontal_alignment = 1
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Box" type="VBoxContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -130
+offset_top = 300
+offset_right = 130
+offset_bottom = 520
+grow_horizontal = 2
+theme_override_constants/separation = 14
+
+[node name="NewBtn" type="Button" parent="UI/Box"]
+layout_mode = 2
+custom_minimum_size = Vector2(260, 52)
+theme_override_font_sizes/font_size = 22
+text = "⚔ 新的冒险"
+
+[node name="ContinueBtn" type="Button" parent="UI/Box"]
+layout_mode = 2
+custom_minimum_size = Vector2(260, 52)
+theme_override_font_sizes/font_size = 22
+text = "📂 继续征途"
+
+[node name="SettingsBtn" type="Button" parent="UI/Box"]
+layout_mode = 2
+custom_minimum_size = Vector2(260, 52)
+theme_override_font_sizes/font_size = 22
+text = "⚙ 设置"
+
+[node name="QuitBtn" type="Button" parent="UI/Box"]
+layout_mode = 2
+custom_minimum_size = Vector2(260, 52)
+theme_override_font_sizes/font_size = 22
+text = "退出"
+
+[node name="Version" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -140
+offset_top = -30
+offset_right = -12
+offset_bottom = -8
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.45, 0.48, 0.55, 1)
+text = "v0.3 · Godot 4.3"
+horizontal_alignment = 2

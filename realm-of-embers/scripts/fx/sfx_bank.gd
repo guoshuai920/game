@@ -21,11 +21,45 @@ var _last_ms: Dictionary = {}
 
 
 func _ready() -> void:
+	_ensure_buses()
 	for i in POOL_SIZE:
 		var p := AudioStreamPlayer.new()
-		p.bus = &"Master"
+		p.bus = &"Sfx"
 		add_child(p)
 		_players.append(p)
+
+
+## 运行时建总线（免 .tres 资源）：Music（BGM 预留）/ Sfx / Ambient
+func _ensure_buses() -> void:
+	for bus_name: String in ["Music", "Sfx", "Ambient"]:
+		if AudioServer.get_bus_index(bus_name) == -1:
+			var idx := AudioServer.bus_count
+			AudioServer.add_bus(idx)
+			AudioServer.set_bus_name(idx, bus_name)
+			AudioServer.set_bus_send(idx, "Master")
+
+
+## 应用设置（设置面板/读档调用）：各总线线性音量 0~1 + 动效开关
+func apply_settings(s: Dictionary) -> void:
+	for key: String in ["master", "sfx", "ambient", "music"]:
+		if s.has(key):
+			var v := clampf(float(s[key]), 0.0, 1.0)
+			var bus_name := key.capitalize()
+			var idx := AudioServer.get_bus_index(bus_name)
+			if idx >= 0:
+				AudioServer.set_bus_volume_db(idx, linear_to_db(maxf(v, 0.0001)))
+				AudioServer.set_bus_mute(idx, v <= 0.001)
+	FxBank.reduced_motion = bool(s.get("reduced_motion", FxBank.reduced_motion))
+
+
+func snapshot_settings() -> Dictionary:
+	return {
+		"master": db_to_linear(AudioServer.get_bus_volume_db(0)),
+		"sfx": db_to_linear(AudioServer.get_bus_volume_db(maxi(0, AudioServer.get_bus_index("Sfx")))),
+		"ambient": db_to_linear(AudioServer.get_bus_volume_db(maxi(0, AudioServer.get_bus_index("Ambient")))),
+		"music": 1.0,
+		"reduced_motion": FxBank.reduced_motion,
+	}
 
 
 func _stream(name: String) -> AudioStream:
@@ -68,7 +102,8 @@ func ambient() -> void:
 	s.loop_end = s.data.size() / 2  # 16bit mono → 帧数
 	_ambient = AudioStreamPlayer.new()
 	_ambient.stream = s
-	_ambient.volume_db = -14.0
+	_ambient.bus = &"Ambient"
+	_ambient.volume_db = -10.0
 	add_child(_ambient)
 	_ambient.play()
 

@@ -5,8 +5,12 @@
 ## 运行
 
 1. 安装 **Godot 4.2+**（推荐 4.3，中文与 Emoji 依赖系统字体回退）。
-2. Godot → Import → 选择本目录 `project.godot` → 运行（F5）。无菜单，直接进战场。
+2. Godot → Import → 选择本目录 `project.godot` → 运行（F5）。启动进**主菜单**（新冒险/继续/设置）。
 3. 自动化冒烟测试：`godot --headless --path 本目录 -- --autotest`（10 倍速跑完整局并输出结果）。
+
+## v0.3 更新（UX 与场景）
+
+主菜单与存档选择 · 设置页（音量分总线，持久化 `user://settings.json`）· 1x/2x/3x 加速与暂停 · **提前召唤下一波奖励金币** · 程序化战场地面（草地/土路/塔位石板，`tools/bake_ground.mjs`）· 六步新手引导（可跳过）
 
 ## 玩法与操作
 
