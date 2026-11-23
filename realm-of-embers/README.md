@@ -87,7 +87,7 @@ scripts/ main.gd（主循环/经济/UI）· tower.gd · enemy.gd · projectile.g
 
 全量特效与单位精灵均为**开发期烘焙**，运行时只播放纹理，玩家侧零 JS 依赖：
 
-- **特效**：`tools/export_fx.mjs` 从 [pixelfx](https://github.com/patch-gg/pixelfx)（MIT）检出目录渲染 27 个效果（命中/AOE/死亡/状态/元素反应/流程反馈），支持色板变体与播放倍速；改 `LIST` 表 → `node tools/export_fx.mjs` 重新烘焙。环境变量 `PIXELFX_ROOT` 指定检出位置（默认 `../../reference/pixelfx`）。
+- **特效**：`tools/export_fx.mjs` 从 [pixelfx](https://github.com/patch-gg/pixelfx)（MIT）检出目录渲染 27 个效果（命中/AOE/死亡/状态/流程反馈），支持色板变体与播放倍速；**三个元素反应（蒸汽/超导/过载）为 `tools/custom_fx/` 手写专属特效**，走“打稿→渲染→看图→打磨”循环；改 `LIST` 表 → `node tools/export_fx.mjs` 重新烘焙。环境变量 `PIXELFX_ROOT` 指定检出位置（默认 `../../reference/pixelfx`）。
 - **单位**：`tools/bake_units.mjs` 把手绘像素网格（14 敌人 / 6 塔 / 城堡 / 7 弹道）烘成精灵图，双足自动生成 4 帧走路循环；改网格 → 重跑即可。
 - **运行时**：`scripts/fx/fx_bank.gd`（SpriteFrames 惰性构建 + 按锚点播放）、`scripts/fx/units_bank.gd`（单位锚定精灵）、`scripts/fx/ambient.gd`（余烬/火星氛围粒子）。
 - 目检循环：`--review` / bake 自带 `review/units.png` 暗底总览（该目录不入库，可随时重生成）。

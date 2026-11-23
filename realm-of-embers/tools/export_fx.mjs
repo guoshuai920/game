@@ -46,11 +46,10 @@ const LIST = [
 	{ name: "st_slow", id: "status/frozen", scale: 0.45, anchor: "center" },
 	{ name: "st_poison", id: "nature/poison-cloud", scale: 0.22, anchor: "ground" },
 	{ name: "st_stun", id: "lightning/electrified", scale: 0.45, anchor: "center" },
-	// —— 元素反应 ——
-	{ name: "rx_steam", id: "water/geyser", speed: 2.2, scale: 0.45, anchor: "ground",
-		options: { palette: ["#24272e", "#4a4f58", "#767d88", "#a6adb6", "#d7dce2", "#fff3e0"] } },  // 蒸汽灰白+暖芯
-	{ name: "rx_superconductor", id: "ice/frost-nova", options: { palette: PAL.volt }, speed: 1.5, scale: 0.42, anchor: "center" },
-	{ name: "rx_overload", id: "scifi/emp-blast", options: { palette: PAL.volt }, speed: 1.5, anchor: "center" },
+	// —— 元素反应（专属定制，tools/custom_fx/ 手写）——
+	{ name: "rx_steam", id: "rx_steam", custom: true, scale: 0.55, anchor: "ground" },
+	{ name: "rx_superconductor", id: "rx_superconductor", custom: true, scale: 0.55, anchor: "center" },
+	{ name: "rx_overload", id: "rx_overload", custom: true, scale: 0.6, anchor: "center" },
 	// —— 支援 / 流程 ——
 	{ name: "fx_heal", id: "holy/heal-aoe", speed: 1.4, scale: 0.55, anchor: "ground" },
 	{ name: "fx_summon", id: "spawn/summon-rise", speed: 1.7, scale: 0.45, anchor: "ground" },
@@ -67,7 +66,10 @@ if (REVIEW_MODE) mkdirSync(REVIEW, { recursive: true });
 const index = [];
 for (const e of LIST) {
 	try {
-		const fx = await loadEffect(e.id);
+		// custom=true：加载 tools/custom_fx/ 下的手写特效（相对 core 导入已就位）
+		const fx = e.custom
+			? await loadEffect(e.id, join(HERE, "custom_fx"))
+			: await loadEffect(e.id);
 		const r = renderFrames(fx, { bg: "none", options: e.options });
 		const s = spriteSheet(fx, r, e.name);
 		save(join(OUT, `${e.name}.png`), s.png);

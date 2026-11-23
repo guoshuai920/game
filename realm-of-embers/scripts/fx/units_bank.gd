@@ -82,7 +82,7 @@ static func make(id: String) -> AnimatedSprite2D:
 		s.offset = Vector2(-fw * 0.5, -fh * 0.5)  # 弹道：中心锚点
 	else:
 		s.offset = Vector2(-fw * 0.5, -fh)          # 单位/塔：脚底中心锚点
-	s.scale = Vector2_ONE * float(inf.get("scale", 1.0))
+	s.scale = Vector2.ONE * float(inf.get("scale", 1.0))
 	if int(inf.get("frames", 1)) > 1:
 		s.play(&"move")
 	return s

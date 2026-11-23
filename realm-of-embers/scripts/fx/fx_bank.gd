@@ -74,7 +74,7 @@ static func play(layer: Node, fx_name: String, pos: Vector2, opts: Dictionary = 
 	s.centered = true
 	s.offset = Vector2(float(piv[0]) - fw * 0.5, float(piv[1]) - fh * 0.5)
 	s.position = pos
-	s.scale = Vector2_ONE * float(inf.get("scale", 1.0)) * float(opts.get("scale", 1.0))
+	s.scale = Vector2.ONE * float(inf.get("scale", 1.0)) * float(opts.get("scale", 1.0))
 	s.speed_scale = maxf(0.05, float(inf.get("speed", 1.0)) * float(opts.get("speed", 1.0)))
 	s.flip_h = bool(opts.get("flip", false))
 	if opts.has("modulate"):

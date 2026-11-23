@@ -290,53 +290,53 @@
  },
  {
   "name": "rx_steam",
-  "id": "water/geyser",
+  "id": "rx_steam",
   "image": "rx_steam.png",
   "atlas": "rx_steam.json",
-  "fw": 184,
-  "fh": 168,
-  "frames": 151,
+  "fw": 168,
+  "fh": 118,
+  "frames": 36,
   "fps": 30,
   "loop": false,
-  "speed": 1.9,
-  "scale": 0.45,
+  "speed": 1,
+  "scale": 0.55,
   "pivot": [
-   92,
-   126
+   84,
+   89
   ]
  },
  {
   "name": "rx_superconductor",
-  "id": "ice/frost-nova",
+  "id": "rx_superconductor",
   "image": "rx_superconductor.png",
   "atlas": "rx_superconductor.json",
-  "fw": 288,
-  "fh": 192,
-  "frames": 103,
+  "fw": 150,
+  "fh": 130,
+  "frames": 52,
   "fps": 30,
   "loop": false,
-  "speed": 1.5,
-  "scale": 0.42,
+  "speed": 1,
+  "scale": 0.55,
   "pivot": [
-   144,
-   96
+   75,
+   65
   ]
  },
  {
   "name": "rx_overload",
-  "id": "scifi/emp-blast",
+  "id": "rx_overload",
   "image": "rx_overload.png",
   "atlas": "rx_overload.json",
-  "fw": 152,
-  "fh": 116,
-  "frames": 97,
+  "fw": 160,
+  "fh": 128,
+  "frames": 40,
   "fps": 30,
   "loop": false,
-  "speed": 1.5,
-  "scale": 1,
+  "speed": 1,
+  "scale": 0.6,
   "pivot": [
-   76,
-   58
+   80,
+   64
   ]
  },
  {

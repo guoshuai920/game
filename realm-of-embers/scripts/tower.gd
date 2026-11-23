@@ -161,13 +161,16 @@ func _fire_at(target: Variant) -> void:
 	var pierce := 0.0
 	if b.has("pierce"):
 		pierce = float(b["pierce"])
-	if randf() < 0.10 + float(game.get_mod("crit", 0.0)):
+	var crit := randf() < 0.10 + float(game.get_mod("crit", 0.0))
+	if crit:
 		dmg *= 2.0
 	if family_id == "thunder":
 		_chain_hit(target, dmg, int(stat("chain")))
 		_recoil()
 		return
 	var payload := {"dmg": dmg, "element": element, "pierce": pierce}
+	if crit:
+		payload["crit"] = true
 	var aoe := stat("aoe")
 	if aoe > 0.0:
 		payload["aoe"] = aoe

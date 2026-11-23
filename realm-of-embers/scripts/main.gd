@@ -55,6 +55,7 @@ var wave_clock := 0.0
 var game_time := 0.0
 var upgrade_choices: Array = []
 var autotest := false
+var _boss_shown := {}  # 本波已演出过出场的 Boss id
 
 
 func _ready() -> void:
@@ -96,9 +97,27 @@ func _build_shop() -> void:
 		var f := fam as Dictionary
 		var b := Button.new()
 		b.custom_minimum_size = Vector2(150, 62)
-		b.text = "%s %s\n%d 金" % [f.get("emoji", ""), f.get("name", ""), int(f.get("cost", 0))]
+		b.text = ""
 		b.tooltip_text = String(f.get("desc", ""))
 		b.add_theme_font_size_override("font_size", 16)
+		# 像素图标（塔精灵第一帧），左侧立绘 + 右侧名称/价格
+		var icon := TextureRect.new()
+		icon.texture = UnitsBank.frame_texture("tower_" + String(f.get("id")))
+		icon.custom_minimum_size = Vector2(46, 54)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.position = Vector2(5, 4)
+		icon.size = Vector2(46, 54)
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(icon)
+		var lb := Label.new()
+		lb.text = "%s\n%d 金" % [String(f.get("name", "")), int(f.get("cost", 0))]
+		lb.position = Vector2(56, 8)
+		lb.size = Vector2(90, 46)
+		lb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lb.add_theme_font_size_override("font_size", 15)
+		lb.add_theme_color_override("font_color", Color(1.0, 0.88, 0.55))
+		b.add_child(lb)
 		b.pressed.connect(_on_shop_click.bind(String(f.get("id"))))
 		shop_bar.add_child(b)
 		shop_buttons[String(f.get("id"))] = b
@@ -134,6 +153,67 @@ func spawn_enemy_at(id: String, pos: Vector2, mul: float) -> void:
 	enemies_node.add_child(e)
 	e.setup(self, id, mul)
 	e.position = pos
+	var def := DataLoader.enemy(id)
+	if bool(def.get("boss", false)) and not _boss_shown.has(id):
+		_boss_shown[id] = true
+		_boss_intro(String(def.get("name", id)), pos)
+
+
+## Boss 出场演出：压暗 + 招唤光柱 + 名称横幅 + 震屏（非阻塞，约 1.4 秒）
+func _boss_intro(boss_name: String, pos: Vector2) -> void:
+	FxBank.play(fx_air, "fx_summon", pos, {"scale": 2.4})
+	FxBank.play(fx_air, "rx_overload", pos, {"scale": 1.6})
+	_shake(7.0)
+	var dim := ColorRect.new()
+	dim.color = Color(0.5, 0.05, 0.05, 0.0)
+	dim.size = Vector2(1280, 720)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(dim)
+	var banner := Label.new()
+	banner.text = "⚠ BOSS 出场 · %s" % boss_name
+	banner.add_theme_font_size_override("font_size", 44)
+	banner.add_theme_color_override("font_color", Color(1.0, 0.5, 0.4))
+	banner.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
+	banner.add_theme_constant_override("outline_size", 10)
+	banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	banner.position = Vector2(140, 240)
+	banner.size = Vector2(1000, 70)
+	banner.pivot_offset = Vector2(500, 35)
+	banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(banner)
+	banner.scale = Vector2(0.3, 0.3)
+	banner.modulate.a = 0.0
+	var tw := create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(dim, "color:a", 0.28, 0.18)
+	tw.tween_property(banner, "modulate:a", 1.0, 0.18)
+	tw.tween_property(banner, "scale", Vector2.ONE, 0.32).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.chain().tween_interval(0.9)
+	tw.chain().tween_property(dim, "color:a", 0.0, 0.3)
+	tw.parallel().tween_property(banner, "modulate:a", 0.0, 0.3)
+	tw.chain().tween_callback(func() -> void:
+		dim.queue_free()
+		banner.queue_free()
+	)
+
+
+## 暴击金色飘字
+func _crit_float(pos: Vector2, dmg: int) -> void:
+	var l := Label.new()
+	l.text = "暴击 %d!" % dmg
+	l.add_theme_font_size_override("font_size", 30)
+	l.add_theme_color_override("font_color", Color(1.0, 0.85, 0.25))
+	l.add_theme_color_override("font_outline_color", Color(0.35, 0.2, 0.0, 0.9))
+	l.add_theme_constant_override("outline_size", 8)
+	l.position = pos + Vector2(randf_range(-30, -10), -46)
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.z_index = 20
+	add_child(l)
+	var tw := create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(l, "position:y", l.position.y - 44.0, 0.7)
+	tw.tween_property(l, "modulate:a", 0.0, 0.7).set_ease(Tween.EASE_IN)
+	tw.chain().tween_callback(l.queue_free)
 
 
 ## 是否有模态弹窗打开（存档面板/三选一/结算）——打开期间背景一切交互禁用
@@ -413,6 +493,7 @@ func _on_next_wave() -> void:
 	state = "wave"
 	spawn_queue = _build_queue(wave_idx)
 	wave_clock = 0.0
+	_boss_shown = {}
 	log_msg("⚔️ 第 %d/%d 波来袭！" % [wave_idx, DataLoader.waves.size()])
 	_render()
 

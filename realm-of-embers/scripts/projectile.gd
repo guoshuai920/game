@@ -76,11 +76,13 @@ func _hit() -> void:
 		if target != null and not target.dead:
 			target.take_damage(dmg, elem, pierce)
 			_apply_effects(target)
+	if bool(payload.get("crit", false)):
+		game._crit_float(position, int(dmg))
 	_hit_fx(elem)
 	queue_free()
 
 
-## 命中特效：AOE 走地面层，单体命中走上层；元素对应色板变体
+## 命中特效：AOE 走地面层，单体命中走上层；暴击金色版，元素对应色板变体
 func _hit_fx(elem: String) -> void:
 	if game == null:
 		return
@@ -91,6 +93,9 @@ func _hit_fx(elem: String) -> void:
 		elif elem == "poison":
 			aoe_name = "aoe_venom"
 		FxBank.play(game.fx_ground, aoe_name, position)
+		return
+	if bool(payload.get("crit", false)):
+		FxBank.play(game.fx_air, "hit_crit", position)
 		return
 	var hit_name := "hit_arrow"
 	match elem:
