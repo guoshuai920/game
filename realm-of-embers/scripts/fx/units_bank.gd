@@ -25,6 +25,14 @@ static func ensure() -> void:
 		if ed is Dictionary:
 			for k: String in (ed as Dictionary):
 				_manifest[k] = (ed as Dictionary)[k]
+	# 自定义层（玩家自己的 AI/手绘 PNG）最高优先级：重烘 emoji 也不会覆盖
+	var fc := FileAccess.open("res://assets/units/custom.json", FileAccess.READ)
+	if fc != null:
+		var cd: Variant = JSON.parse_string(fc.get_as_text())
+		fc.close()
+		if cd is Dictionary:
+			for k2: String in (cd as Dictionary):
+				_manifest[k2] = (cd as Dictionary)[k2]
 	_loaded = true
 
 
