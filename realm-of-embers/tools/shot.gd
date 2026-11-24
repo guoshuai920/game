@@ -23,6 +23,9 @@ func _run() -> void:
 	game._build_tower("arrow", 4)
 	game._build_tower("thunder", 8)
 	game._build_tower("frost", 6)
+	# 选中一座塔：复现底部选中面板布局（回归"卖出/目标/信息与商店重叠"）
+	game.sel_tower = game.towers_node.get_child(0)
+	game._show_selected_info(game.sel_tower)
 	game._on_next_wave()
 	for i in 5:
 		game.spawn_enemy_at("goblin", Vector2(300 + i * 16.0, 380), 1.0)
