@@ -876,9 +876,7 @@ func _on_next_wave() -> void:
 	spawn_queue = _build_queue(wave_idx)
 	wave_clock = 0.0
 	_boss_shown = {}
-	# 开波全屏转场：像素溶解扫过战场（减弱动效时跳过）
-	if not FxBank.reduced_motion:
-		FxBank.play(fx_air, "fx_screen", Vector2(640, 360), {"z": 5, "priority": true})
+	# 用户反馈全屏像素溶解转场过于花哨，已移除；开波反馈保留音效+日志+顶栏刷新
 	Sfx.play("wave_start", -2.0)
 	if tut_step == 3:
 		_tutorial_next()
