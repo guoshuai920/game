@@ -11,6 +11,7 @@ var _flashes: Array = []
 var _tex_grass: Texture2D
 var _tex_path: Texture2D
 var _tex_slot: Texture2D
+var _tex_castle: Texture2D
 
 
 func _ready() -> void:
@@ -19,6 +20,8 @@ func _ready() -> void:
 	_tex_grass = load("res://assets/ground/grass.png")
 	_tex_path = load("res://assets/ground/path.png")
 	_tex_slot = load("res://assets/ground/slot.png")
+	# 纹理必须在 _ready 预载：_draw 里首次 load 的纹理 GPU 上传不生效，会渲染成白色占位块
+	_tex_castle = UnitsBank.frame_texture("castle")
 
 
 func _draw() -> void:
@@ -71,9 +74,9 @@ func _draw() -> void:
 	# 城堡（像素精灵，脚底对齐城堡锚点）
 	var c: Array = r.get("castle", [1200, 600])
 	var cpos := Vector2(float(c[0]), float(c[1]))
-	var castle_tex := UnitsBank.frame_texture("castle")
+	var castle_tex := _tex_castle
 	if castle_tex != null:
-		var cs := 3.0
+		var cs := 4.0
 		var cw := castle_tex.get_width() * cs
 		var ch2 := castle_tex.get_height() * cs
 		draw_texture_rect(castle_tex, Rect2(cpos.x - cw * 0.5, cpos.y - ch2 + 8.0, cw, ch2), false)

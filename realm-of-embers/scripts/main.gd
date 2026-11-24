@@ -84,9 +84,13 @@ var skill_bar: HBoxContainer
 func _ready() -> void:
 	autotest = OS.get_cmdline_user_args().has("--autotest")
 	test_mode = autotest or OS.get_cmdline_user_args().has("--testload") \
-		or OS.get_cmdline_user_args().has("--skilltest")
+		or OS.get_cmdline_user_args().has("--skilltest") \
+		or OS.get_cmdline_user_args().has("--shot")
 	gold = int(DataLoader.rules.get("startGold", 220))
 	lives = int(DataLoader.rules.get("lives", 20))
+	# 开局保底：自带陨星术 Lv1（三选一的 skill_meteor 牌可继续升级）
+	# 存档/测试档在后续加载 mods 时会整体覆盖本值
+	mods["skill_meteor"] = 1
 	for s in DataLoader.rules.get("slots", []):
 		var high: bool = (s as Array).size() > 2 and bool((s as Array)[2])
 		slots.append({"pos": Vector2(float(s[0]), float(s[1])), "high": high, "tower": null})
@@ -253,7 +257,7 @@ const TUT_STEPS := [
 	"① 点击下方商店，选一座塔（先从便宜的弩塔练手）",
 	"② 点击发光的 ⊕ 石板格位放置（金环高台射程更远）",
 	"③ 拖一座塔到同类同星塔上 → 合成升星",
-	"④ 点「开始」放第一波；波内可 ⏩ 提前召唤下一波赚金币",
+	"④ 点「开始」放第一波；右上 ☄️ 陨星术点它再点战场释放，⏩ 可提前召唤赚金币",
 	"⑤ 挺住！波末有金币利息——攒钱也是一种防御",
 	"⑥ 战后三选一强化决定流派；顶栏可调速/暂停/动效",
 ]
@@ -1424,6 +1428,15 @@ func _on_pick_slot(i: int, fresh: bool) -> void:
 	var m: Variant = data.get("mods", {})
 	if m is Dictionary:
 		mods = m
+		# 老档迁移：一个技能都没有的旧档补发陨星术 Lv1（与新档开局保底对齐）
+		var has_skill := false
+		for sid in SKILLS:
+			if get_mod(sid, 0.0) > 0.0:
+				has_skill = true
+				break
+		if not has_skill:
+			mods["skill_meteor"] = 1
+			log_msg("📋 老档补发开援助：☄️ 陨星术 Lv1 已就绪")
 	wave_idx = int(data.get("wave", 0))
 	for t in towers_node.get_children():
 		t.queue_free()

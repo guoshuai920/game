@@ -589,19 +589,19 @@ T.venom = {
 	],
 };
 
-// ---------- 城堡（18×14，3x 显示） ----------
+// ---------- 城堡（18×14，4x 显示） ----------
 const C = {};
 C.castle = {
-	pal: { o: "#161022", m: "#8d94a5", a: "#b8bfcd", t: "#5b3419", S: "#5f6675", g: "#c03a2e" },
+	pal: { o: "#14101e", m: "#5d6478", a: "#8890a3", t: "#2a1a0c", S: "#3e4453", g: "#e6b84e", r: "#a33b30", R: "#c8503c", w: "#ffb04a" },
 	grid: [
 		"........g.........",
 		"........o.........",
 		".oooo....oooo.....",
-		".ommo....ommo.....",
-		".ommo....ommo.....",
+		".oRRr....oRRr.....",
+		".omrr....omrr.....",
 		".ommoaaaaommo.....",
 		".ommaaaaaaamo.....",
-		".ommaaaaaaamo.....",
+		".ommawaaawaamo....",
 		".ommaatttaamo.....",
 		".ommaatttaamo.....",
 		".ommaatttaamo.....",

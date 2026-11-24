@@ -75,6 +75,9 @@ static func make(id: String) -> AnimatedSprite2D:
 	s.sprite_frames = frames(id)
 	if s.sprite_frames == null:
 		return null
+	# 关键：SpriteFrames.new() 自带空的 "default" 动画，不指到 "move" 的话
+	# 静态精灵（frames==1，不会 play）会停在空动画上——什么都不画
+	s.animation = &"move"
 	var fw := float(inf.get("fw", 1))
 	var fh := float(inf.get("fh", 1))
 	s.centered = false

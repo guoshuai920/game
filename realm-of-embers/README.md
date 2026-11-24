@@ -15,7 +15,7 @@
 ## v0.4 更新（主动技能 + Boss 阶段 + 图鉴）
 
 吸收 Kingdom Rush 的"波内主动性"，按 roguelite 身份改造（借骨架不抄结构）：
-- **主动技能**：☄️陨星术（点地 AOE+点燃）/ 🌀时滞领域（全场减速）/ 🛡️王室民兵（空投驻军**阻截**地面敌人，站桩互殴）。KR 式免费+冷却+点地释放；**获取与升级走三选一**（`skill_*` 强化牌，可叠加升等级）——技能免费保成熟手感，随机构筑是我们的差异
+- **主动技能**：☄️陨星术（点地 AOE+点燃）/ 🌀时滞领域（全场减速）/ 🛡️王室民兵（空投驻军**阻截**地面敌人，站桩互殴）。KR 式免费+冷却+点地释放；**陨星术开局自带 Lv1**（老档无技能会自动补发），更多技能与升级走三选一（`skill_*` 强化牌，可叠加升等级）——技能免费保成熟手感，随机构筑是我们的差异
 - **Boss 阶段脚本**：`enemies.json` 新增 `phases`（血量阈值触发）：石像鬼半空增甲+瘫痪塔、炎魔召唤爪牙+狂暴、暗影国王召唤座狼亲卫
 - **敌人图鉴**：全敌人一句描述；**首见弹窗**介绍特性（`user://bestiary.json` 记录）
 
@@ -104,6 +104,8 @@ scripts/ main.gd（主循环/经济/UI）· tower.gd · enemy.gd · projectile.g
 
 - **特效**：`tools/export_fx.mjs` 从 [pixelfx](https://github.com/patch-gg/pixelfx)（MIT）检出目录渲染 27 个效果（命中/AOE/死亡/状态/流程反馈），支持色板变体与播放倍速；**三个元素反应（蒸汽/超导/过载）为 `tools/custom_fx/` 手写专属特效**，走“打稿→渲染→看图→打磨”循环；改 `LIST` 表 → `node tools/export_fx.mjs` 重新烘焙。环境变量 `PIXELFX_ROOT` 指定检出位置（默认 `../../reference/pixelfx`）。
 - **单位**：`tools/bake_units.mjs` 把手绘像素网格（14 敌人 / 6 塔 / 城堡 / 7 弹道）烘成精灵图，双足自动生成 4 帧走路循环；改网格 → 重跑即可。
+- **两个管线坑（踩过实录）**：① 重烘贴图/音效后必须先 `godot --headless --path . --import` 刷新导入缓存，窗口运行才会加载到新资源；② 纹理不能在 `_draw()` 里首次 `load()`（GPU 上传不生效，永远渲染白色占位块）——一律 `_ready` 预载或经 `UnitsBank.make()` 在节点 ready 路径创建。
+- **视觉回归**：`tools/shot.gd` 窗口模式自动摆塔放波并截图 `review/shot_main.png`，目检塔/城堡/弹道/特效是否渲染（`Godot_console.exe --path . --script res://tools/shot.gd -- --shot`）。
 - **运行时**：`scripts/fx/fx_bank.gd`（SpriteFrames 惰性构建 + 按锚点播放）、`scripts/fx/units_bank.gd`（单位锚定精灵）、`scripts/fx/ambient.gd`（余烬/火星氛围粒子）。
 - 目检循环：`--review` / bake 自带 `review/units.png` 暗底总览（该目录不入库，可随时重生成）。
 - **声音**：`tools/gen_sfx.mjs` 纯代码合成 28 个复古音效（方波/锯齿滑音+噪声爆+ADSR）+ 8 秒无缝环境低鸣，WAV 输出到 `assets/sfx/`；`scripts/fx/sfx_bank.gd`（autoload `Sfx`）8 路播放池、随机微变调、M 键静音。改音色 → `node tools/gen_sfx.mjs` 重新生成。

@@ -46,6 +46,7 @@ var _disable_cd := 0.0
 var _can_disable := false
 var _rage_done: Array = []
 var _sprite: AnimatedSprite2D
+var _bar_y := -44.0  # 血条 y（贴着精灵头顶，随体型变化）
 var _base_scale := Vector2.ONE
 var _punch_tw: Tween = null
 var _fx_burn: AnimatedSprite2D = null
@@ -89,12 +90,16 @@ func setup(p_game, p_id: String, p_mul: float) -> void:
 
 func _make_sprite() -> void:
 	_sprite = UnitsBank.make(id)
+	var inf := UnitsBank.info(id)
+	var fh := float(inf.get("fh", 14.0))
 	if _sprite == null:
+		_bar_y = -fh * float(inf.get("scale", 1.0)) - 8.0
 		return
 	_base_scale = _sprite.scale
 	if bool(DataLoader.enemy(id).get("boss", false)):
 		_base_scale *= 1.2
-	_sprite.scale = _base_scale
+		_sprite.scale = _base_scale
+	_bar_y = -fh * _base_scale.y - 8.0
 	add_child(_sprite)
 
 
@@ -134,8 +139,8 @@ func _draw() -> void:
 		col = Color(0.95, 0.8, 0.3)
 	if pct > 0.5:
 		col = Color(0.4, 0.9, 0.4)
-	draw_rect(Rect2(-w * 0.5, -44, w, 5), Color(0.0, 0.0, 0.0, 0.6))
-	draw_rect(Rect2(-w * 0.5, -44, w * pct, 5), col)
+	draw_rect(Rect2(-w * 0.5, _bar_y, w, 5), Color(0.0, 0.0, 0.0, 0.6))
+	draw_rect(Rect2(-w * 0.5, _bar_y, w * pct, 5), col)
 
 
 func _process(delta: float) -> void:

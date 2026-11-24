@@ -6,6 +6,7 @@ extends Control
 static var start_fresh := false
 
 var _settings: SettingsPanel
+var _showcase: Dictionary = {}  # id -> Texture2D，_ready 预载（_draw 里首载的纹理会渲染成白色占位）
 
 @onready var continue_btn: Button = $UI/Box/ContinueBtn
 
@@ -13,9 +14,11 @@ var _settings: SettingsPanel
 func _ready() -> void:
 	# 自动测试/读档冒烟/技能专项直接进战斗场景，不经菜单
 	var args := OS.get_cmdline_user_args()
-	if args.has("--autotest") or args.has("--testload") or args.has("--skilltest"):
+	if args.has("--autotest") or args.has("--testload") or args.has("--skilltest") or args.has("--shot"):
 		get_tree().change_scene_to_file.call_deferred("res://scenes/Main.tscn")
 		return
+	for id: String in ["castle", "inferno", "gargoyle", "goblin", "slime"]:
+		_showcase[id] = UnitsBank.frame_texture(id)
 	SettingsPanel.apply_saved()
 	SettingsPanel.apply_saved()  # 幂等：总线音量+动效开关
 	$UI/Box/NewBtn.pressed.connect(_on_new)
@@ -65,7 +68,7 @@ func _draw() -> void:
 
 
 func _show_unit(id: String, x: float, foot_y: float) -> void:
-	var tex := UnitsBank.frame_texture(id)
+	var tex: Texture2D = _showcase.get(id)
 	if tex == null:
 		return
 	var s := 3.0

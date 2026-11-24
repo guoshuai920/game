@@ -14,6 +14,7 @@ var life := 10.0
 var alive := true
 var _held: Array = []
 var _sprite: AnimatedSprite2D
+var _bar_y := -52.0
 
 
 func setup(p_game, p_hp: float, p_dps: float, p_life: float) -> void:
@@ -26,6 +27,7 @@ func setup(p_game, p_hp: float, p_dps: float, p_life: float) -> void:
 	if _sprite != null:
 		_sprite.scale = Vector2(1.35, 1.35)
 		_sprite.modulate = Color(0.85, 0.95, 1.25)  # 王室蓝披风感
+		_bar_y = -float(UnitsBank.info("shield").get("fh", 14.0)) * 1.35 - 8.0
 		add_child(_sprite)
 
 
@@ -33,8 +35,8 @@ func _draw() -> void:
 	if hp >= max_hp:
 		return
 	var pct := clampf(hp / max_hp, 0.0, 1.0)
-	draw_rect(Rect2(-16, -52, 32, 5), Color(0, 0, 0, 0.6))
-	draw_rect(Rect2(-16, -52, 32 * pct, 5), Color(0.5, 0.8, 1.0))
+	draw_rect(Rect2(-16, _bar_y, 32, 5), Color(0, 0, 0, 0.6))
+	draw_rect(Rect2(-16, _bar_y, 32 * pct, 5), Color(0.5, 0.8, 1.0))
 
 
 func _process(delta: float) -> void:
