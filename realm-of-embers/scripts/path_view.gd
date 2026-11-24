@@ -76,7 +76,10 @@ func _draw() -> void:
 	var cpos := Vector2(float(c[0]), float(c[1]))
 	var castle_tex := _tex_castle
 	if castle_tex != null:
+		# 像素稿(18px)固定 4x；emoji 高清稿(96px 级)用清单里的 scale，避免放大成巨物
 		var cs := 4.0
+		if String(UnitsBank.info("castle").get("kind", "")) == "emoji":
+			cs = float(UnitsBank.info("castle").get("scale", 1.0))
 		var cw := castle_tex.get_width() * cs
 		var ch2 := castle_tex.get_height() * cs
 		draw_texture_rect(castle_tex, Rect2(cpos.x - cw * 0.5, cpos.y - ch2 + 8.0, cw, ch2), false)

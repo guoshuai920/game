@@ -17,6 +17,14 @@ static func ensure() -> void:
 		f.close()
 		if data is Dictionary:
 			_manifest = data
+	# emoji 高清层（tools/bake_emoji.gd 产出）覆盖像素稿；缺字体的机器不会生成对应条目，自然回落
+	var fe := FileAccess.open("res://assets/units/emoji.json", FileAccess.READ)
+	if fe != null:
+		var ed: Variant = JSON.parse_string(fe.get_as_text())
+		fe.close()
+		if ed is Dictionary:
+			for k: String in (ed as Dictionary):
+				_manifest[k] = (ed as Dictionary)[k]
 	_loaded = true
 
 
