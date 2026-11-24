@@ -1,0 +1,191 @@
+{
+	"bat": {
+		"fh": 102,
+		"fps": 1,
+		"frames": 1,
+		"fw": 128,
+		"image": "custom/bat.png",
+		"kind": "emoji",
+		"scale": 0.35
+	},
+	"castle": {
+		"fh": 128,
+		"fps": 1,
+		"frames": 1,
+		"fw": 123,
+		"image": "custom/castle.png",
+		"kind": "emoji",
+		"scale": 0.61
+	},
+	"gargoyle": {
+		"fh": 116,
+		"fps": 1,
+		"frames": 1,
+		"fw": 128,
+		"image": "custom/gargoyle.png",
+		"kind": "emoji",
+		"scale": 0.38
+	},
+	"goblin": {
+		"fh": 121,
+		"fps": 1,
+		"frames": 1,
+		"fw": 128,
+		"image": "custom/goblin.png",
+		"kind": "emoji",
+		"scale": 0.33
+	},
+	"inferno": {
+		"fh": 128,
+		"fps": 1,
+		"frames": 1,
+		"fw": 105,
+		"image": "custom/inferno.png",
+		"kind": "emoji",
+		"scale": 0.36
+	},
+	"necro": {
+		"fh": 128,
+		"fps": 1,
+		"frames": 1,
+		"fw": 105,
+		"image": "custom/necro.png",
+		"kind": "emoji",
+		"scale": 0.33
+	},
+	"orc": {
+		"fh": 124,
+		"fps": 1,
+		"frames": 1,
+		"fw": 128,
+		"image": "custom/orc.png",
+		"kind": "emoji",
+		"scale": 0.35
+	},
+	"sandworm": {
+		"fh": 121,
+		"fps": 1,
+		"frames": 1,
+		"fw": 128,
+		"image": "custom/sandworm.png",
+		"kind": "emoji",
+		"scale": 0.38
+	},
+	"shadowking": {
+		"fh": 128,
+		"fps": 1,
+		"frames": 1,
+		"fw": 104,
+		"image": "custom/shadowking.png",
+		"kind": "emoji",
+		"scale": 0.36
+	},
+	"shaman": {
+		"fh": 128,
+		"fps": 1,
+		"frames": 1,
+		"fw": 112,
+		"image": "custom/shaman.png",
+		"kind": "emoji",
+		"scale": 0.31
+	},
+	"shield": {
+		"fh": 127,
+		"fps": 1,
+		"frames": 1,
+		"fw": 124,
+		"image": "custom/shield.png",
+		"kind": "emoji",
+		"scale": 0.31
+	},
+	"skeleton": {
+		"fh": 128,
+		"fps": 1,
+		"frames": 1,
+		"fw": 112,
+		"image": "custom/skeleton.png",
+		"kind": "emoji",
+		"scale": 0.31
+	},
+	"slime": {
+		"fh": 123,
+		"fps": 1,
+		"frames": 1,
+		"fw": 128,
+		"image": "custom/slime.png",
+		"kind": "emoji",
+		"scale": 0.33
+	},
+	"slimelet": {
+		"fh": 128,
+		"fps": 1,
+		"frames": 1,
+		"fw": 123,
+		"image": "custom/slimelet.png",
+		"kind": "emoji",
+		"scale": 0.23
+	},
+	"tower_arrow": {
+		"fh": 127,
+		"fps": 1,
+		"frames": 1,
+		"fw": 76,
+		"image": "custom/tower_arrow.png",
+		"kind": "emoji",
+		"scale": 0.44
+	},
+	"tower_bomb": {
+		"fh": 128,
+		"fps": 1,
+		"frames": 1,
+		"fw": 126,
+		"image": "custom/tower_bomb.png",
+		"kind": "emoji",
+		"scale": 0.44
+	},
+	"tower_flame": {
+		"fh": 128,
+		"fps": 1,
+		"frames": 1,
+		"fw": 72,
+		"image": "custom/tower_flame.png",
+		"kind": "emoji",
+		"scale": 0.44
+	},
+	"tower_frost": {
+		"fh": 127,
+		"fps": 1,
+		"frames": 1,
+		"fw": 84,
+		"image": "custom/tower_frost.png",
+		"kind": "emoji",
+		"scale": 0.44
+	},
+	"tower_thunder": {
+		"fh": 128,
+		"fps": 1,
+		"frames": 1,
+		"fw": 128,
+		"image": "custom/tower_thunder.png",
+		"kind": "emoji",
+		"scale": 0.44
+	},
+	"tower_venom": {
+		"fh": 128,
+		"fps": 1,
+		"frames": 1,
+		"fw": 91,
+		"image": "custom/tower_venom.png",
+		"kind": "emoji",
+		"scale": 0.44
+	},
+	"wolf": {
+		"fh": 124,
+		"fps": 1,
+		"frames": 1,
+		"fw": 128,
+		"image": "custom/wolf.png",
+		"kind": "emoji",
+		"scale": 0.32
+	}
+}

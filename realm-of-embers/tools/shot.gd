@@ -27,8 +27,13 @@ func _run() -> void:
 	game.sel_tower = game.towers_node.get_child(0)
 	game._show_selected_info(game.sel_tower)
 	game._on_next_wave()
-	for i in 5:
-		game.spawn_enemy_at("goblin", Vector2(300 + i * 16.0, 380), 1.0)
+	# 全阵容点名将：两排铺开 14 种敌人，目检贴图接入效果
+	var lineup := ["goblin", "orc", "wolf", "shield", "bat", "shaman", "slime",
+		"slimelet", "skeleton", "necro", "gargoyle", "sandworm", "shadowking", "inferno"]
+	for i: int in lineup.size():
+		var px := 60.0 + (i % 7) * 90.0
+		var py := 120.0 + float(i / 7) * 110.0
+		game.spawn_enemy_at(lineup[i], Vector2(px, py), 1.0)
 	await create_timer(2.2).timeout
 	DirAccess.make_dir_recursive_absolute(OUT_PATH.get_base_dir())
 	var img := root.get_texture().get_image()
